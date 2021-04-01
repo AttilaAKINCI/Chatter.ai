@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">Chatter</string>
+
+    <!-- Lottie files -->
+    <string name="lottie_chatter">chatter.json</string>
+
+    <!--  Login Fragment   -->
+    <string name="title_login">Login</string>
+    <string name="prompt_user_name">Username</string>
+    <string name="action_sign_in">Login</string>
+    <string name="action_proceed">Proceed to Dashboard</string>
+
+    <!--  Splash Fragment   -->
+    <string name="image_transition">ImageTransition</string>
+    <string name="title_splash">Splash</string>
+    <string name="desc_splash">Splash Fragment</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>
