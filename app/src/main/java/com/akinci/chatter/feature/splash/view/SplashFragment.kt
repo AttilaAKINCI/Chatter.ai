@@ -9,15 +9,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavOptions
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
-import com.akinci.chatter.databinding.FragmentSplashBinding
 import com.akinci.chatter.R
+import com.akinci.chatter.databinding.FragmentSplashBinding
+import com.akinci.chatter.feature.splash.viewmodel.SplashViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
+@AndroidEntryPoint
 class SplashFragment : Fragment() {
+
     lateinit var binding: FragmentSplashBinding
+    private val splashViewModel : SplashViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,9 +33,12 @@ class SplashFragment : Fragment() {
         binding = FragmentSplashBinding.inflate(layoutInflater)
         binding.lifecycleOwner = viewLifecycleOwner
 
+        //hide appbar on splash screen
+        (activity as AppCompatActivity).supportActionBar?.hide()
+
         binding.animation.addAnimatorListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator?) {}
-            override fun onAnimationEnd(animation: Animator?) { navigateToLogin() }
+            override fun onAnimationEnd(animation: Animator?) { navigate() }
             override fun onAnimationCancel(animation: Animator?) {}
             override fun onAnimationRepeat(animation: Animator?) {}
         })
@@ -39,33 +47,44 @@ class SplashFragment : Fragment() {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        binding.animation.playAnimation()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //hide appbar on splash screen
-        (activity as AppCompatActivity).supportActionBar?.hide()
+
+        splashViewModel.isLoggedIn.observe(viewLifecycleOwner){
+            // when observe anything, start animation.
+            binding.animation.playAnimation()
+        }
+    }
+
+    private fun navigate(){
+        Handler(Looper.getMainLooper()).postDelayed({
+            if(splashViewModel.isLoggedIn.value.isNullOrBlank()){
+                navigateToLogin()
+            }else{
+                navigateToChatDashboard()
+            }
+        }, 100)
+    }
+
+    private fun navigateToChatDashboard(){
+        /** Navigate to Chat Dashboard Page **/
+        NavHostFragment.findNavController(this).navigate(R.id.action_splashFragment_to_chatDashboardFragment)
     }
 
     private fun navigateToLogin(){
-        Handler(Looper.getMainLooper()).postDelayed({
-            val imageTransition = resources.getString(R.string.image_transition)
+        val imageTransition = resources.getString(R.string.image_transition)
 
-            val extras = FragmentNavigatorExtras(
-                binding.animation to imageTransition
-            )
+        val extras = FragmentNavigatorExtras(
+            binding.animation to imageTransition
+        )
 
-            /** Navigate to Login Page **/
-            NavHostFragment.findNavController(this).navigate(
-                R.id.action_splashFragment_to_loginFragment,
-                null,
-                null,
-                extras
-            )
-        }, 100)
+        /** Navigate to Login Page **/
+        NavHostFragment.findNavController(this).navigate(
+            R.id.action_splashFragment_to_loginFragment,
+            null,
+            null,
+            extras
+        )
     }
 
 }

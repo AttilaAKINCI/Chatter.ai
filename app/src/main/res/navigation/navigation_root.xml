@@ -13,10 +13,26 @@
             app:launchSingleTop="true"
             app:popUpTo="@id/splashFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashFragment_to_chatDashboardFragment"
+            app:destination="@id/chatDashboardFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.akinci.chatter.feature.login.view.LoginFragment"
-        android:label="@string/title_login" />
+        android:label="@string/title_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_chatDashboardFragment"
+            app:destination="@id/chatDashboardFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/splashFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/chatDashboardFragment"
+        android:name="com.akinci.chatter.feature.dashboard.view.ChatDashboardFragment" />
 
 </navigation>

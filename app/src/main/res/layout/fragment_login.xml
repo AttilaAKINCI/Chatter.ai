@@ -60,7 +60,7 @@
             android:transitionGroup="true">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_email"
+                android:id="@+id/et_user_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_user_name"
@@ -72,7 +72,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/btn_sign_in"
+            android:id="@+id/btn_login"
             style="@style/Widget.Button.Colored.Rounded"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -84,8 +84,7 @@
             android:layout_marginBottom="@dimen/margin_default_x3"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:text="@{vm.isLoggedIn() ? @string/action_proceed : @string/action_sign_in }"
-            android:onClick="@{() -> vm.actionLogin()}"/>
+            android:text="@string/action_login" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
