@@ -100,6 +100,10 @@ class LoginFragment : Fragment() {
                         }
                     }
                 }
+                is Resource.Error -> {
+                    // show info message on snackBar
+                    SnackBar.makeLarge(binding.root, it.message, SnackBar.LENGTH_LONG).show()
+                }
             }
         }
     }

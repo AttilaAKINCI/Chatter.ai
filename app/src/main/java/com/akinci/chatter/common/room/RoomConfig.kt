@@ -9,8 +9,5 @@ class RoomConfig {
         const val MESSAGE_TABLE_NAME = "messageTable"
         const val USER_TABLE_NAME = "userTable"
 
-        // Indices
-        const val ID = "id"
-
     }
 }

@@ -17,8 +17,10 @@
     <!--  Chat Dashboard Fragment   -->
 
 
+    <string name="image_view_content_desc">Image View Content Description</string>
+
     <!-- Text Input Field Not empty Validation -->
     <string name="validation_text_input_edit_text_not_empty">Please fill required fields.</string>
-    <string name="validation_text_input_edit_text_min_char_limit">Username can be minimum 2 characters</string>
+    <string name="validation_text_input_edit_text_min_char_limit">Username can be minimum %1$d characters</string>
 
 </resources>

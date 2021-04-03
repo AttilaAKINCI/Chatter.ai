@@ -6,4 +6,6 @@
     <dimen name="activity_horizontal_margin_x2">32dp</dimen>
     <dimen name="margin_default_x3">48dp</dimen>
 
+    <dimen name="message_user_corner_radius">30dp</dimen>
+
 </resources>

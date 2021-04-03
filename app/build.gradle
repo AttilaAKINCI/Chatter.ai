@@ -23,7 +23,7 @@ android {
          *  because of copyright related regulations
         **/
         buildConfigField("String", "CHATTER_BASE_URL", CHATTER_BASE_URL)
-        buildConfigField("String", "CHATTER_CHAT_HISTORY_URL", CHATTER_CHAT_HISTORY_URL)
+        buildConfigField("String", "CHATTER_MESSAGE_HISTORY_URL", CHATTER_MESSAGE_HISTORY_URL)
 
         testInstrumentationRunner "com.akinci.chatter.HiltTestRunner"
     }
