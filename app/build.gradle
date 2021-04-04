@@ -44,6 +44,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    packagingOptions{
+        exclude 'META-INF/*'
+    }
 }
 
 dependencies {
@@ -121,8 +124,10 @@ dependencies {
 
     // Instrumented Testes
     androidTestImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'android.arch.core:core-testing:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     androidTestImplementation 'com.google.truth:truth:1.0.1'
+    androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3'
     androidTestImplementation 'com.google.dagger:hilt-android-testing:2.31-alpha'   //hilt integration for testing
     kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.31-alpha'            //hilt integration for testing
 

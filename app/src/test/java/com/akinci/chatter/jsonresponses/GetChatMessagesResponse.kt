@@ -1,6 +1,6 @@
 package com.akinci.chatter.jsonresponses
 
-class GetChatMessages {
+class GetChatMessagesResponse {
     companion object {
         val chatMessages = """
             {

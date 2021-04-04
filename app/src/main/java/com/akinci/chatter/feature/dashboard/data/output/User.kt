@@ -11,13 +11,13 @@ data class User(
 )
 
 /** For integrity between network and ROOM Database **/
-fun User.convertUserToUserEntity() : UserEntity {
+fun User.convertUserToUserEntity(loggedIdUser: Boolean = false) : UserEntity {
     var userEntity : UserEntity
 
     apply {
         userEntity = UserEntity(
            id = this.id.toLong(),
-           loggedIdUser = false,
+           loggedIdUser = loggedIdUser,
            avatarURL = this.avatarURL,
            nickname = this.nickname
        )
