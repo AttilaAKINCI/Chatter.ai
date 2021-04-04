@@ -1,6 +1,7 @@
 package com.akinci.chatter.feature.dashboard.adapter.viewholder
 
 import com.akinci.chatter.R
+import com.akinci.chatter.common.component.listview.BaseViewHolder
 import com.akinci.chatter.common.extension.getFormattedDateString
 import com.akinci.chatter.common.extension.setGlideImageCentered
 import com.akinci.chatter.databinding.RowMessageRightBinding

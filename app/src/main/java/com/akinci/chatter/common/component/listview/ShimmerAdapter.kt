@@ -1,4 +1,4 @@
-package com.akinci.chatter.common.component.adapter
+package com.akinci.chatter.common.component.listview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

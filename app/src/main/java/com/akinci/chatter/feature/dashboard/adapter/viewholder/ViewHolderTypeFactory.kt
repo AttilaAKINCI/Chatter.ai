@@ -1,4 +1,4 @@
-package com.akinci.chatter.feature.dashboard.adapter
+package com.akinci.chatter.feature.dashboard.adapter.viewholder
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,7 +7,7 @@ import com.akinci.chatter.databinding.RowMessageRightBinding
 import com.akinci.chatter.feature.acommon.data.local.entities.relations.MessageWithUser
 import com.akinci.chatter.feature.acommon.data.local.entities.relations.MessageWithUser.Companion.LEFT_VIEW
 import com.akinci.chatter.feature.acommon.data.local.entities.relations.MessageWithUser.Companion.RIGHT_VIEW
-import com.akinci.chatter.feature.dashboard.adapter.viewholder.BaseViewHolder
+import com.akinci.chatter.common.component.listview.BaseViewHolder
 import com.akinci.chatter.feature.dashboard.adapter.viewholder.LeftViewHolder
 import com.akinci.chatter.feature.dashboard.adapter.viewholder.RightViewHolder
 

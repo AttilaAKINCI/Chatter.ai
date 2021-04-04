@@ -1,4 +1,4 @@
-package com.akinci.chatter.feature.dashboard.adapter.viewholder
+package com.akinci.chatter.common.component.listview
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

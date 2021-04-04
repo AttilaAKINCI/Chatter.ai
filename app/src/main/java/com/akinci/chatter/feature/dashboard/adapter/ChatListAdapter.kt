@@ -5,7 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.akinci.chatter.feature.acommon.data.local.entities.relations.MessageWithUser
-import com.akinci.chatter.feature.dashboard.adapter.viewholder.BaseViewHolder
+import com.akinci.chatter.common.component.listview.BaseViewHolder
+import com.akinci.chatter.feature.dashboard.adapter.viewholder.ViewHolderTypeFactory
 
 class ChatListAdapter(
     dataOwnerId: Long
