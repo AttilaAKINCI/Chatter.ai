@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.akinci.chatter.common.coroutine.CoroutineContextProvider
-import com.akinci.chatter.common.extensions.getRandomLong
+import com.akinci.chatter.common.extension.getRandomLong
 import com.akinci.chatter.common.helper.Resource
 import com.akinci.chatter.common.storage.PreferenceConfig
 import com.akinci.chatter.common.storage.Preferences

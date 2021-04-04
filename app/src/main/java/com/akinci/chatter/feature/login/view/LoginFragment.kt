@@ -1,26 +1,20 @@
 package com.akinci.chatter.feature.login.view
 
 import android.animation.ValueAnimator.INFINITE
-import android.animation.ValueAnimator.RESTART
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.transition.Fade
 import androidx.transition.TransitionInflater
 import androidx.transition.TransitionSet
-import com.airbnb.lottie.LottieDrawable
-import com.akinci.chatter.MainActivity
 import com.akinci.chatter.R
 import com.akinci.chatter.common.component.SnackBar
-import com.akinci.chatter.common.extensions.validateMinCharacter
-import com.akinci.chatter.common.extensions.validateNotEmpty
+import com.akinci.chatter.common.extension.validateMinCharacter
 import com.akinci.chatter.common.helper.Resource
 import com.akinci.chatter.databinding.FragmentLoginBinding
 import com.akinci.chatter.feature.login.viewmodel.LoginViewModel

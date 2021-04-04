@@ -1,8 +1,7 @@
-package com.akinci.chatter.common.component
+package com.akinci.chatter.common.extension
 
 import android.content.Context
 import android.widget.ImageView
-import com.akinci.chatter.R
 import com.bumptech.glide.GlideBuilder
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -10,7 +9,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.module.AppGlideModule
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
-
 
 @GlideModule
 class BaseGlideModule : AppGlideModule() {

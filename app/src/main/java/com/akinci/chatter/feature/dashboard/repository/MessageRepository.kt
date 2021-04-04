@@ -1,10 +1,12 @@
 package com.akinci.chatter.feature.dashboard.repository
 
+import androidx.lifecycle.LiveData
 import com.akinci.chatter.common.helper.Resource
 import com.akinci.chatter.common.network.NetworkChecker
 import com.akinci.chatter.common.repository.BaseRepositoryImpl
 import com.akinci.chatter.feature.acommon.data.local.dao.MessageDao
 import com.akinci.chatter.feature.acommon.data.local.dao.UserDao
+import com.akinci.chatter.feature.acommon.data.local.entities.MessageEntity
 import com.akinci.chatter.feature.acommon.data.local.entities.relations.MessageWithUser
 import com.akinci.chatter.feature.dashboard.data.api.MessageServiceDao
 import com.akinci.chatter.feature.dashboard.data.output.Message
@@ -25,12 +27,14 @@ class MessageRepository @Inject constructor(
     suspend fun getUserMessageHistory(): Resource<MessageHistoryResponse>
         = callService { messageServiceDao.getUserMessageHistory() }
 
+    suspend fun insertMessage(message: MessageEntity) = messageDao.insertMessage(message)
+
     suspend fun insertUserHistoryMessages(dataOwnerId: Long, messageList: List<Message>) {
         messageDao.insertAllMessages(messageList.convertMessageListToMessageEntityList(dataOwnerId))
         userDao.insertAllUsers(messageList.convertMessageListToUserEntityList())
     }
 
-    suspend fun getUserRecentMessages(dataOwnerId: Long): List<MessageWithUser>
+    fun getUserRecentMessages(dataOwnerId: Long): LiveData<List<MessageWithUser>>
         = messageDao.getAllMessages(dataOwnerId)
 
 }

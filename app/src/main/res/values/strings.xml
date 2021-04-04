@@ -15,7 +15,7 @@
     <string name="desc_splash">Splash Fragment</string>
 
     <!--  Chat Dashboard Fragment   -->
-
+    <string name="edit_text_chat_type_placeholder">Type a message</string>
 
     <string name="image_view_content_desc">Image View Content Description</string>
 

@@ -1,6 +1,7 @@
 package com.akinci.chatter.feature.acommon.data.local.entities.relations
 
 import androidx.room.Embedded
+import androidx.room.Ignore
 import androidx.room.Junction
 import androidx.room.Relation
 import com.akinci.chatter.R
@@ -9,7 +10,9 @@ import com.akinci.chatter.feature.acommon.data.local.entities.UserEntity
 import com.akinci.chatter.feature.dashboard.adapter.ViewHolderTypeFactory
 
 data class MessageWithUser (
-    @Embedded val messageEntity: MessageEntity,
+    @Embedded
+    val messageEntity: MessageEntity,
+
     @Relation(
         parentColumn = "messageOwnerId",
         entityColumn = "id"
