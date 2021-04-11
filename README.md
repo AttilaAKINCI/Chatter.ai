@@ -4,7 +4,7 @@ Chatter is a chatting sample app which can simulate mutual chatting behaviour.
 ## UI
 Chatter application consist of 3 different fragments and 1 root activity. Activity holds a container layout in order to manage fragments which will be controlled by navigation component.
 
-[APK Link (https://drive.google.com/file/d/1lfyL-3M1dngEaqR7A5u4GyDYL952UiBE/view?usp=sharing)](https://drive.google.com/file/d/1lfyL-3M1dngEaqR7A5u4GyDYL952UiBE/view?usp=sharing)
+[APK Link (https://drive.google.com/file/d/1838a1BVOCnpyOPRwZ-nEfeo7MPxBUnuF/view?usp=sharing)](https://drive.google.com/file/d/1838a1BVOCnpyOPRwZ-nEfeo7MPxBUnuF/view?usp=sharing)
 
 Fragments :
 * SplashFragment
