@@ -55,7 +55,7 @@ class ChatDashboardViewModel @Inject constructor(
         // normally I should send it remote server but rest endpoints are limited.
 
         loggedInUser.value?.let {
-            if(message.isNotEmpty()){
+            if(message.isNotEmpty() && message.isNotBlank()){
                 val userMessage = MessageEntity(
                         dataOwnerId = it.id,
                         id = "${getRandomString(3)}_${getRandomThreeDigits()}",
@@ -65,6 +65,8 @@ class ChatDashboardViewModel @Inject constructor(
                 )
 
                 messageRepository.insertMessage(userMessage)
+            } else{
+                _eventHandler.postValue(Resource.Info("Message can not be empty and blank"))
             }
         }
     }

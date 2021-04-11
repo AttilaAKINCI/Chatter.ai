@@ -13,9 +13,19 @@ fun TextInputEditText.validateNotEmpty() : Boolean {
     return TextUtils.isEmpty(error) && !TextUtils.isEmpty(text)
 }
 
+fun TextInputEditText.validateNotBlank() : Boolean {
+    error = if(text.isNullOrBlank()){
+        resources.getString(R.string.validation_text_input_edit_text_not_blank)
+    }else{ null }
+
+    return TextUtils.isEmpty(error) && !TextUtils.isEmpty(text)
+}
+
 fun TextInputEditText.validateMinCharacter(characterLimit : Int) : Boolean {
     // Firstly dependent validations checked..
-    if(validateNotEmpty()){
+    // can not be empty
+    // can not be blank
+    if(validateNotEmpty() && validateNotBlank()){
         error = if(text!!.length < characterLimit){ // previously checked text is not empty or null
             resources.getString(
                     R.string.validation_text_input_edit_text_min_char_limit,
