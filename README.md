@@ -1,4 +1,4 @@
-# Chatter
+# Chatter - Under maintanence -> Jetpack Compose migration
 Chatter is a chatting sample app which can simulate mutual chatting behaviour. 
 
 ## UI
