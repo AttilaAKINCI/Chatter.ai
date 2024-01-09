@@ -90,16 +90,16 @@ ChatDashboardFragment is the main part of the application. Features and instruct
 * Using bottom chat window, User can send some message to active thread. 
 
 #### WireFrame
-<img src="https://github.com/AttilaAKINCI/Chatter/blob/master/images/wireframe.png" width="600">
+<img src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/wireframe.png" width="600">
 
 #### ScreenShots
-<img src="https://github.com/AttilaAKINCI/Chatter/blob/master/images/1.png" width="200">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/master/images/2.png" width="200">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/master/images/3.png" width="200">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/master/images/4.png" width="200">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/master/images/5.png" width="200">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/master/images/6.png" width="200">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/master/images/7.png" width="200">    
+<img src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/1.png" width="200">   <img
+src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/2.png" width="200">   <img
+src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/3.png" width="200">   <img
+src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/4.png" width="200">   <img
+src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/5.png" width="200">   <img
+src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/6.png" width="200">   <img
+src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/7.png" width="200">    
 
 
 # License
