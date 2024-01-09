@@ -1,27 +1,3 @@
 <resources>
     <string name="app_name">Chatter</string>
-
-    <!-- Lottie files -->
-    <string name="lottie_chatter">chatter.json</string>
-
-    <!--  Login Fragment   -->
-    <string name="title_login">Login</string>
-    <string name="prompt_user_name">Username</string>
-    <string name="action_login">Login</string>
-
-    <!--  Splash Fragment   -->
-    <string name="image_transition">ImageTransition</string>
-    <string name="title_splash">Splash</string>
-    <string name="desc_splash">Splash Fragment</string>
-
-    <!--  Chat Dashboard Fragment   -->
-    <string name="edit_text_chat_type_placeholder">Type a message</string>
-
-    <string name="image_view_content_desc">Image View Content Description</string>
-
-    <!-- Text Input Field Not empty Validation -->
-    <string name="validation_text_input_edit_text_not_empty">Please fill required fields.</string>
-    <string name="validation_text_input_edit_text_not_blank">Field can not be blank.</string>
-    <string name="validation_text_input_edit_text_min_char_limit">Username can be minimum %1$d characters</string>
-
 </resources>
