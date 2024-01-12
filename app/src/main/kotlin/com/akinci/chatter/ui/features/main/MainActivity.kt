@@ -1,4 +1,4 @@
-package com.akinci.chatter
+package com.akinci.chatter.ui.features.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.akinci.chatter.ui.theme.ChatterTheme
+import com.akinci.chatter.ui.ds.theme.ChatterTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

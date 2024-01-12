@@ -1,4 +1,4 @@
-package com.akinci.chatter.ui.theme
+package com.akinci.chatter.ui.ds.theme
 
 import androidx.compose.ui.graphics.Color
 
