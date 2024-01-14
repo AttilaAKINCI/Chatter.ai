@@ -18,6 +18,7 @@ import com.akinci.chatter.ui.ds.theme.ChatterTheme
 import com.akinci.chatter.ui.features.NavGraphs
 import com.akinci.chatter.ui.features.dashboard.DashboardViewContract.State
 import com.akinci.chatter.ui.features.destinations.SplashScreenDestination
+import com.akinci.chatter.ui.navigation.animation.FadeInOutAnimation
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.popUpTo
@@ -25,7 +26,7 @@ import com.ramcosta.composedestinations.navigation.popUpTo
 // TODO list of users which chat before + Random user
 
 @Composable
-@Destination
+@Destination(style = FadeInOutAnimation::class)
 fun DashboardScreen(
     navigator: DestinationsNavigator,
     vm: DashboardViewModel = hiltViewModel()
