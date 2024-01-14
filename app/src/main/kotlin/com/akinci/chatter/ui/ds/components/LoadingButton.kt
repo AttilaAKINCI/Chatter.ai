@@ -19,7 +19,15 @@ import com.akinci.chatter.core.compose.UIModePreviews
 import com.akinci.chatter.ui.ds.theme.ChatterTheme
 import com.akinci.chatter.ui.ds.theme.bodyLargeBold
 
-// TODO kdoc
+/**
+ *  LoadingButton is a button component with circular loading
+ *
+ *  @property [modifier] compose modifier
+ *  @property [title] title
+ *  @property [isLoading] flag for loading state
+ *  @property [onClick] handler for click actions
+ *
+ * **/
 @Composable
 fun LoadingButton(
     modifier: Modifier = Modifier,
