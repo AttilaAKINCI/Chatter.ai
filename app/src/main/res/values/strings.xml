@@ -6,6 +6,7 @@
     <string name="login_screen_login_button_title">Login</string>
     <string name="login_screen_register_button_title">Register</string>
     <string name="login_screen_error_user_could_not_found_in_local">User could not found, you can try to create new user.</string>
+    <string name="login_screen_error_user_already_exists">This user already is in use. You can try to log in.</string>
     <string name="login_screen_error_user_generation">User could not be created.</string>
     <string name="login_screen_error_user_saved">User could not be saved.</string>
     <string name="login_screen_error_user_blank_response">Blank user creation service response</string>
