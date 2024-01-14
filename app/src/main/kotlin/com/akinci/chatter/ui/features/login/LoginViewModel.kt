@@ -92,11 +92,11 @@ class LoginViewModel @Inject constructor(
             }
             delay(500L)
 
-            // create random user and replace user's name
             val loginName = stateFlow.value.name
             if (!userUseCase.verifyUser(loginName)) {
                 // user couldn't found in local database so we can create new one.
                 val user = withContext(contextProvider.io) {
+                    // create random user and replace user's name
                     userUseCase.getRandomUser()
                         .map { it?.copy(name = loginName) }
                 }.onFailure {
