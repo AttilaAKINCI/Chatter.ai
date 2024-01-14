@@ -103,14 +103,6 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     ksp(libs.hilt.android.compiler)
 
-    // NETWORK
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.logging)
-    implementation(libs.ktor.client.mock)
-
     // LIFECYCLE
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.runtime.compose)
@@ -132,6 +124,14 @@ dependencies {
     implementation(libs.compose.destinations.animations.core)
     ksp(libs.compose.destinations.ksp)
 
+    // NETWORK
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.ktor.client.mock)
+
     // DEPENDENCY INJECTION - HILT
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
@@ -139,6 +139,12 @@ dependencies {
 
     // LOGGING
     implementation(libs.timber)
+
+    // STORAGE
+    implementation(libs.datastore.preferences)
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
 
     // UNIT TESTING
     testImplementation(libs.junit.jupiter.api)
