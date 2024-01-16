@@ -9,6 +9,27 @@ import androidx.compose.ui.text.font.FontWeight.Companion.W700
 import androidx.compose.ui.unit.sp
 import com.akinci.chatter.R
 
+val swash = TextStyle(
+    fontFamily = FontFamily(
+        Font(resId = R.font.berkshire_swash_regular)
+    ),
+)
+
+val SwashTypography = Typography(
+    displayLarge = swash.copy(
+        lineHeight = 62.sp,
+        fontSize = 56.sp,
+        letterSpacing = 0.sp,
+        fontWeight = W700,
+    ),
+    displayMedium = swash.copy(
+        lineHeight = 52.sp,
+        fontSize = 45.sp,
+        letterSpacing = 0.sp,
+        fontWeight = W700,
+    ),
+)
+
 val roboto = TextStyle(
     fontFamily = FontFamily(
         Font(resId = R.font.roboto_regular)
@@ -110,3 +131,9 @@ val AppTypography = Typography(
 
 val Typography.bodyLargeBold: TextStyle
     get() = AppTypography.bodyLarge.copy(fontWeight = W700)
+
+val Typography.displayLarge_swash: TextStyle
+    get() = SwashTypography.displayLarge
+
+val Typography.displayMedium_swash: TextStyle
+    get() = SwashTypography.displayMedium

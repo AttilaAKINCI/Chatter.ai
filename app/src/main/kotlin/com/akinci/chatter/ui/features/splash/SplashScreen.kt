@@ -25,6 +25,7 @@ import com.akinci.chatter.R
 import com.akinci.chatter.core.compose.UIModePreviews
 import com.akinci.chatter.ui.ds.components.InfiniteLottieAnimation
 import com.akinci.chatter.ui.ds.theme.ChatterTheme
+import com.akinci.chatter.ui.ds.theme.displayLarge_swash
 import com.akinci.chatter.ui.features.splash.SplashViewContract.State
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -74,7 +75,7 @@ private fun SplashScreenContent() {
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(id = R.string.app_name),
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.displayMedium,
+                    style = MaterialTheme.typography.displayLarge_swash,
                 )
             }
         }

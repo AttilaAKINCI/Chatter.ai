@@ -1,15 +1,18 @@
 package com.akinci.chatter.ui.features.login
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -23,7 +26,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,6 +38,8 @@ import com.akinci.chatter.ui.ds.components.InfiniteLottieAnimation
 import com.akinci.chatter.ui.ds.components.LoadingButton
 import com.akinci.chatter.ui.ds.components.snackbar.SnackBarContainer
 import com.akinci.chatter.ui.ds.theme.ChatterTheme
+import com.akinci.chatter.ui.ds.theme.displayLarge_swash
+import com.akinci.chatter.ui.ds.theme.displayMedium_swash
 import com.akinci.chatter.ui.features.destinations.DashboardScreenDestination
 import com.akinci.chatter.ui.features.login.LoginViewContract.State
 import com.ramcosta.composedestinations.annotation.Destination
@@ -83,12 +90,23 @@ private fun LoginScreenContent(
                     .align(Alignment.Center),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                InfiniteLottieAnimation(
-                    modifier = Modifier
-                        .fillMaxWidth(0.7f)
-                        .aspectRatio(1f),
-                    animationId = R.raw.chatter
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy((-24).dp)
+                ) {
+                    InfiniteLottieAnimation(
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .aspectRatio(1f),
+                        animationId = R.raw.chatter
+                    )
+                    Text(
+                        text = stringResource(id = R.string.app_name),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.displayMedium_swash,
+                    )
+                    Spacer(modifier = Modifier.width(64.dp))
+                }
 
                 OutlinedTextField(
                     modifier = Modifier

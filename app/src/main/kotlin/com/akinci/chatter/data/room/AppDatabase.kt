@@ -8,15 +8,11 @@ import com.akinci.chatter.data.room.user.UserDao
 import com.akinci.chatter.data.room.user.UserEntity
 
 @Database(
-    entities = [
-        MessageEntity::class,
-        UserEntity::class,
-    ],
+    entities = [MessageEntity::class, UserEntity::class],
     version = 1,
     exportSchema = false,
 )
 abstract class AppDatabase : RoomDatabase() {
-
     abstract fun getMessageDao(): MessageDao
     abstract fun getUserDao(): UserDao
 }
