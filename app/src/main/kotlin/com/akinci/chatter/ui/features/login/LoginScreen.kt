@@ -42,10 +42,11 @@ import com.akinci.chatter.ui.ds.theme.displayLarge_swash
 import com.akinci.chatter.ui.ds.theme.displayMedium_swash
 import com.akinci.chatter.ui.features.destinations.DashboardScreenDestination
 import com.akinci.chatter.ui.features.login.LoginViewContract.State
+import com.akinci.chatter.ui.navigation.animation.FadeInOutAnimation
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-@Destination
+@Destination(style = FadeInOutAnimation::class)
 @Composable
 fun LoginScreen(
     navigator: DestinationsNavigator,
