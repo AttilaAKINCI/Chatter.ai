@@ -2,6 +2,8 @@ package com.akinci.chatter.ui.features.dashboard
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -27,8 +29,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,6 +46,7 @@ import com.akinci.chatter.domain.user.User
 import com.akinci.chatter.ui.ds.components.Dialog
 import com.akinci.chatter.ui.ds.components.LoadingButton
 import com.akinci.chatter.ui.ds.theme.ChatterTheme
+import com.akinci.chatter.ui.ds.theme.DarkYellow
 import com.akinci.chatter.ui.ds.theme.bodyLarge_swash
 import com.akinci.chatter.ui.features.NavGraphs
 import com.akinci.chatter.ui.features.dashboard.DashboardViewContract.State
@@ -102,10 +111,26 @@ private fun DashboardScreenContent(
                 onLogoutClick = onLogoutClick,
             )
 
-            DashboardScreen.Content(
-                modifier = Modifier.weight(1f),
-                users = uiState.users,
-            )
+            when {
+                uiState.error -> DashboardScreen.Info(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(id = R.string.dashboard_screen_error),
+                    image = painterResource(id = R.drawable.ic_error_128dp),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
+
+                uiState.noData -> DashboardScreen.Info(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(id = R.string.dashboard_screen_no_data),
+                    image = painterResource(id = R.drawable.ic_no_data_128dp),
+                    tint = Color.DarkYellow,
+                )
+
+                else -> DashboardScreen.Content(
+                    modifier = Modifier.weight(1f),
+                    users = uiState.users,
+                )
+            }
 
             DashboardScreen.Footer(
                 isLoading = uiState.isNewChatButtonLoading,
@@ -145,6 +170,38 @@ private fun DashboardScreen.TopBar(
         },
     )
     Divider()
+}
+
+@Composable
+private fun DashboardScreen.Info(
+    modifier: Modifier = Modifier,
+    image: Painter,
+    tint: Color,
+    text: String,
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 48.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Image(
+                painter = image,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(color = tint)
+            )
+            Spacer(modifier = Modifier.height(48.dp))
+            Text(
+                text = text,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    }
 }
 
 @Composable

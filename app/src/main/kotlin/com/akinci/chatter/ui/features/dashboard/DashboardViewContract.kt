@@ -8,11 +8,12 @@ import kotlinx.collections.immutable.persistentListOf
 object DashboardViewContract {
 
     data class State(
-        val isLogoutDialogVisible: Boolean = false,
-
         val name: String = "",
         val users: PersistentList<User> = persistentListOf(),
+        val noData: Boolean = false,
+        val error: Boolean = false,
         val isNewChatButtonLoading: Boolean = false,
         val logoutUser: Boolean = false,
+        val isLogoutDialogVisible: Boolean = false,
     ) : UIState
 }

@@ -19,6 +19,7 @@ private val Grey_5 = Color(0xFF131313)
 
 private val Aqua = Color(0xFF00BCD4)
 private val Teal = Color(0xFF009688)
+private val Yellow_1 = Color(0xFFD1B814)
 
 val LightColorScheme = lightColorScheme(
     primary = Blue_1,
@@ -45,3 +46,5 @@ val DarkColorScheme = darkColorScheme(
     onSurfaceVariant = White_3,
     tertiaryContainer = Teal
 )
+
+val Color.Companion.DarkYellow: Color get() = Yellow_1

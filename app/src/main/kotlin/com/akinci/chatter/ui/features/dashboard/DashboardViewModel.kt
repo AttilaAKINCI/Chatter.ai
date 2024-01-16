@@ -28,10 +28,14 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             val loggedInUsersName = dataStorage.getLoggedInUsersName()
 
+            // TODO fetch user messages and manage no data and error states here.
+
             _stateFlow.reduce {
                 copy(
                     name = loggedInUsersName.orEmpty(),
-                    users = persistentListOf()
+                    users = persistentListOf(),
+                    noData = false,
+                    error = false,
                 )
             }
         }
