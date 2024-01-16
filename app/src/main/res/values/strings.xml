@@ -12,5 +12,15 @@
     <string name="login_screen_error_user_blank_response">Blank user creation service response</string>
     <string name="login_screen_error_general">Unknown service error is occurred</string>
 
+    <string name="dashboard_screen_top_bar_title">Welcome back, %s !!</string>
+    <string name="dashboard_screen_new_chat_button_title">Start New Chat</string>
+    <string name="dashboard_screen_log_out_confirm_title">Confirmation required</string>
+    <string name="dashboard_screen_log_out_confirm_description">Do you really want to logout ?
+
+        If you want to stay and continue to chat with people more, you can press "Close" to dismiss dialog.
+    </string>
+    <string name="dashboard_screen_log_out_confirm_button_title">Logout</string>
+    <string name="dashboard_screen_log_out_dismiss_button_title">Close</string>
+
     <string name="general_connection_problem">Please check your internet connection and try again later.</string>
 </resources>

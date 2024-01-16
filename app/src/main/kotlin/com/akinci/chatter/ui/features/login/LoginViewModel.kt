@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.akinci.chatter.R
 import com.akinci.chatter.core.compose.reduce
-import com.akinci.chatter.core.coroutine.ContextProvider
 import com.akinci.chatter.data.datastore.DataStorage
 import com.akinci.chatter.domain.user.UserUseCase
 import com.akinci.chatter.ui.ds.components.snackbar.SnackBarState
@@ -14,14 +13,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val contextProvider: ContextProvider,
     private val dataStorage: DataStorage,
     private val userUseCase: UserUseCase,
 ) : ViewModel() {
@@ -94,11 +91,9 @@ class LoginViewModel @Inject constructor(
 
             val loginName = stateFlow.value.name
             if (!userUseCase.verifyUser(loginName)) {
-                // user couldn't found in local database so we can create new one.
-                val user = withContext(contextProvider.io) {
-                    // create random user and replace user's name
-                    userUseCase.getRandomUser()
-                        .map { it?.copy(name = loginName) }
+                // user couldn't found in local database so we can create new one and replace user's name
+                val user = userUseCase.getRandomUser().map {
+                    it?.copy(name = loginName)
                 }.onFailure {
                     // our random user creation rest call is failed.
                     val errorMessageId = when (it) {

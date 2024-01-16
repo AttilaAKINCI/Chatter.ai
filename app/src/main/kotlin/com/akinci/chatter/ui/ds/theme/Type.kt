@@ -28,6 +28,12 @@ val SwashTypography = Typography(
         letterSpacing = 0.sp,
         fontWeight = W700,
     ),
+    bodyLarge = swash.copy(
+        lineHeight = 24.sp,
+        fontSize = 17.sp,
+        letterSpacing = 0.sp,
+        fontWeight = W400,
+    ),
 )
 
 val roboto = TextStyle(
@@ -131,6 +137,9 @@ val AppTypography = Typography(
 
 val Typography.bodyLargeBold: TextStyle
     get() = AppTypography.bodyLarge.copy(fontWeight = W700)
+
+val Typography.bodyLarge_swash: TextStyle
+    get() = SwashTypography.bodyLarge
 
 val Typography.displayLarge_swash: TextStyle
     get() = SwashTypography.displayLarge
