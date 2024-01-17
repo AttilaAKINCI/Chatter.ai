@@ -19,6 +19,8 @@ class UserRepository @Inject constructor(
 
     suspend fun getUser(name: String) = runCatching { userDao.getUser(name) }
 
+    suspend fun getUser(id: Long) = runCatching { userDao.getUser(id) }
+
     // endregion
 
     // region REMOTE

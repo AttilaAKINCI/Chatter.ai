@@ -1,21 +1,18 @@
 package com.akinci.chatter.data.room.message
 
-import androidx.lifecycle.LiveData
-import androidx.room.*
-import com.akinci.chatter.data.room.relations.MessageWithUser
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MessageDao {
-
-    // TODO refactor
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertAllMessages(messages: List<MessageEntity>)
-
     @Insert
     suspend fun insertMessage(message: MessageEntity)
 
-    @Transaction
-    @Query("SELECT * FROM db_table_message WHERE dataOwnerId = :dataOwnerId ORDER BY timestamp ASC")
-    fun getAllMessages(dataOwnerId: Long): LiveData<List<MessageWithUser>>
+    @Query("SELECT distinct(receiver) FROM db_table_message WHERE sender = :sender")
+    suspend fun getReceiverIds(sender: Long): List<Long>
+
+    @Query("SELECT * FROM db_table_message WHERE (sender = :sender AND receiver = :receiver) OR (sender = :receiver AND receiver = :sender) ORDER BY id ASC")
+    fun getChatHistory(sender: Long, receiver: Long): Flow<MessageEntity>
 }

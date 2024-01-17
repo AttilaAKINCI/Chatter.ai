@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -126,6 +127,8 @@ private fun DashboardScreenContent(
                     tint = Color.DarkYellow,
                 )
 
+                uiState.loading -> DashboardScreen.Loading(modifier = Modifier.weight(1f))
+
                 else -> DashboardScreen.Content(
                     modifier = Modifier.weight(1f),
                     users = uiState.users,
@@ -201,6 +204,19 @@ private fun DashboardScreen.Info(
                 style = MaterialTheme.typography.bodyLarge
             )
         }
+    }
+}
+
+@Composable
+private fun DashboardScreen.Loading(
+    modifier: Modifier = Modifier,
+) {
+    // TODO update loading into shimmer loading
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator()
     }
 }
 

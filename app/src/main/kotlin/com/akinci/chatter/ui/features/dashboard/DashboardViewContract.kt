@@ -10,6 +10,7 @@ object DashboardViewContract {
     data class State(
         val name: String = "",
         val users: PersistentList<User> = persistentListOf(),
+        val loading: Boolean = true,
         val noData: Boolean = false,
         val error: Boolean = false,
         val isNewChatButtonLoading: Boolean = false,

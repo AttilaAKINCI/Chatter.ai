@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.akinci.chatter.R
 import com.akinci.chatter.core.compose.reduce
+import com.akinci.chatter.core.coroutine.ContextProvider
 import com.akinci.chatter.data.datastore.DataStorage
 import com.akinci.chatter.domain.user.UserUseCase
 import com.akinci.chatter.ui.ds.components.snackbar.SnackBarState
@@ -13,12 +14,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
+    private val contextProvider: ContextProvider,
     private val dataStorage: DataStorage,
     private val userUseCase: UserUseCase,
 ) : ViewModel() {
@@ -47,11 +50,10 @@ class LoginViewModel @Inject constructor(
             }
             delay(500L)
 
-            val loginName = stateFlow.value.name
-            if (userUseCase.verifyUser(loginName)) {
-                // user details on local storage is verified
-                // save user's name to local storage for auto login feature.
-                dataStorage.setLoggedInUsersName(loginName)
+            // try verify user details on local storage
+            if (verifyUser()) {
+                // to simulate successful login save user's name to local storage (auto log in)
+                login()
 
                 // navigate user to dashboard screen.
                 _stateFlow.reduce {
@@ -89,11 +91,13 @@ class LoginViewModel @Inject constructor(
             }
             delay(500L)
 
-            val loginName = stateFlow.value.name
-            if (!userUseCase.verifyUser(loginName)) {
+            // try to verify user details on local storage
+            if (!verifyUser()) {
                 // user couldn't found in local database so we can create new one and replace user's name
-                val user = userUseCase.getRandomUser().map {
-                    it?.copy(name = loginName)
+                val user = withContext(contextProvider.io) {
+                    userUseCase.getRandomUser().map {
+                        it?.copy(name = stateFlow.value.name)
+                    }
                 }.onFailure {
                     // our random user creation rest call is failed.
                     val errorMessageId = when (it) {
@@ -114,32 +118,33 @@ class LoginViewModel @Inject constructor(
                 }.getOrNull()
 
                 if (user != null) {
-                    userUseCase.saveUser(user)
-                        .onSuccess {
-                            // we successfully created and saved new user.
-                            // save user's name to local storage for auto login feature.
-                            dataStorage.setLoggedInUsersName(loginName)
+                    withContext(contextProvider.io) {
+                        userUseCase.saveUser(user)
+                    }.onSuccess {
+                        // we successfully created and saved new user.
+                        // to simulate successful login save user's name to local storage (auto log in)
+                        login()
 
-                            // navigate user to dashboard screen.
-                            _stateFlow.reduce {
-                                copy(
-                                    navigateToDashboard = true,
-                                    isLoginButtonLoading = false,
-                                    isRegisterButtonLoading = false,
-                                )
-                            }
-                        }.onFailure {
-                            // we couldn't save created user to our local storage.
-                            _stateFlow.reduce {
-                                copy(
-                                    snackBarState = SnackBarState(
-                                        messageId = R.string.login_screen_error_user_saved
-                                    ),
-                                    isLoginButtonLoading = false,
-                                    isRegisterButtonLoading = false,
-                                )
-                            }
+                        // navigate user to dashboard screen.
+                        _stateFlow.reduce {
+                            copy(
+                                navigateToDashboard = true,
+                                isLoginButtonLoading = false,
+                                isRegisterButtonLoading = false,
+                            )
                         }
+                    }.onFailure {
+                        // we couldn't save created user to our local storage.
+                        _stateFlow.reduce {
+                            copy(
+                                snackBarState = SnackBarState(
+                                    messageId = R.string.login_screen_error_user_saved
+                                ),
+                                isLoginButtonLoading = false,
+                                isRegisterButtonLoading = false,
+                            )
+                        }
+                    }
                 } else {
                     // we received empty rest response.
                     _stateFlow.reduce {
@@ -164,6 +169,18 @@ class LoginViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    private suspend fun login() {
+        withContext(contextProvider.io) {
+            dataStorage.setLoggedInUsersName(stateFlow.value.name)
+        }
+    }
+
+    private suspend fun verifyUser(): Boolean {
+        return withContext(contextProvider.io) {
+            userUseCase.verifyUser(stateFlow.value.name)
         }
     }
 
