@@ -22,6 +22,9 @@ class UserUseCase @Inject constructor(
     }
 
     suspend fun getChatMembers(loggedInUserName: String): Result<List<User>> {
+        // TODO we got chat members from messaging table but it's not correct.
+        //  we need a separate table for holding member to member chat window state.
+
         // Simulate network delay
         delay(500L)
 
