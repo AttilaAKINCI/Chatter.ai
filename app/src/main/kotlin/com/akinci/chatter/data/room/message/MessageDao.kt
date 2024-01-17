@@ -10,9 +10,7 @@ interface MessageDao {
     @Insert
     suspend fun insertMessage(message: MessageEntity)
 
-    @Query("SELECT distinct(receiver) FROM db_table_message WHERE sender = :sender")
-    suspend fun getReceiverIds(sender: Long): List<Long>
-
+    // TODO we will get chat history flow using chatId
     @Query("SELECT * FROM db_table_message WHERE (sender = :sender AND receiver = :receiver) OR (sender = :receiver AND receiver = :sender) ORDER BY id ASC")
     fun getChatHistory(sender: Long, receiver: Long): Flow<MessageEntity>
 }
