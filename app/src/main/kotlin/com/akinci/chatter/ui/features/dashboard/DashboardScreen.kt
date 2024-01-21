@@ -3,8 +3,11 @@ package com.akinci.chatter.ui.features.dashboard
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +21,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +35,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,7 +49,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.akinci.chatter.R
 import com.akinci.chatter.core.compose.UIModePreviews
-import com.akinci.chatter.domain.user.User
+import com.akinci.chatter.domain.chatwindow.ChatSession
 import com.akinci.chatter.ui.ds.components.Dialog
 import com.akinci.chatter.ui.ds.components.LoadingButton
 import com.akinci.chatter.ui.ds.theme.ChatterTheme
@@ -51,6 +57,7 @@ import com.akinci.chatter.ui.ds.theme.DarkYellow
 import com.akinci.chatter.ui.ds.theme.bodyLarge_swash
 import com.akinci.chatter.ui.features.NavGraphs
 import com.akinci.chatter.ui.features.dashboard.DashboardViewContract.State
+import com.akinci.chatter.ui.features.destinations.MessagingScreenDestination
 import com.akinci.chatter.ui.features.destinations.SplashScreenDestination
 import com.akinci.chatter.ui.navigation.animation.FadeInOutAnimation
 import com.ramcosta.composedestinations.annotation.Destination
@@ -80,7 +87,12 @@ fun DashboardScreen(
     DashboardScreenContent(
         uiState = uiState,
         onLogoutClick = { vm.showLogoutDialog() },
-        onNewChatMateButtonClick = { vm.findNewChatMate() }
+        onNewChatMateButtonClick = { vm.findNewChatMate() },
+        onChatSessionClick = { sessionId ->
+            navigator.navigate(
+                MessagingScreenDestination(chatSessionId = sessionId)
+            )
+        }
     )
 
     AnimatedVisibility(visible = uiState.isLogoutDialogVisible) {
@@ -100,6 +112,7 @@ private fun DashboardScreenContent(
     uiState: State,
     onLogoutClick: () -> Unit,
     onNewChatMateButtonClick: () -> Unit,
+    onChatSessionClick: (Long) -> Unit,
 ) {
     Surface {
         Column(
@@ -131,7 +144,8 @@ private fun DashboardScreenContent(
 
                 else -> DashboardScreen.Content(
                     modifier = Modifier.weight(1f),
-                    users = uiState.users,
+                    sessions = uiState.chatSessions,
+                    onClick = onChatSessionClick,
                 )
             }
 
@@ -223,14 +237,36 @@ private fun DashboardScreen.Loading(
 @Composable
 private fun DashboardScreen.Content(
     modifier: Modifier = Modifier,
-    users: PersistentList<User>,
+    sessions: PersistentList<ChatSession>,
+    onClick: (Long) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
         state = rememberLazyListState()
     ) {
-        items(users) {
-            // TODO apply messaging rows.
+        items(sessions) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(
+                        indication = rememberRipple(),
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = { onClick(it.sessionId) },
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(text = "#${it.sessionId}")
+                }
+
+                Icon(
+                    modifier = Modifier.padding(16.dp),
+                    imageVector = Icons.Default.KeyboardArrowRight,
+                    contentDescription = null,
+                )
+            }
         }
     }
 }
@@ -266,6 +302,7 @@ private fun DashboardScreenPreview() {
             uiState = State(),
             onLogoutClick = {},
             onNewChatMateButtonClick = {},
+            onChatSessionClick = {},
         )
     }
 }

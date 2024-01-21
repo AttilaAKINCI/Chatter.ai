@@ -8,9 +8,8 @@ import com.akinci.chatter.data.room.AppDatabaseKeys
 data class MessageEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
-    val chatId: Long,
-    val sender: Long,
-    val receiver: Long,
+    val chatWindowId: Long,
+    val senderUserId: Long,
     val time: String,
     val text: String,
 )

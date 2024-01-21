@@ -5,7 +5,7 @@ import com.akinci.chatter.domain.message.Message
 import java.time.ZonedDateTime
 
 fun MessageEntity.toDomain(sender: Long) = Message(
-    isMine = this.sender == sender,
+    isMine = false, // TODO fix here
     time = runCatching { ZonedDateTime.parse(time) }.getOrNull(),
-    text = text
+    text = text,
 )

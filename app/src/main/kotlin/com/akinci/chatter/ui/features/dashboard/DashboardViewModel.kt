@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.akinci.chatter.core.compose.reduce
 import com.akinci.chatter.core.coroutine.ContextProvider
 import com.akinci.chatter.data.datastore.DataStorage
+import com.akinci.chatter.domain.chatwindow.ChatSessionUseCase
 import com.akinci.chatter.domain.user.UserUseCase
 import com.akinci.chatter.ui.features.dashboard.DashboardViewContract.State
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     private val contextProvider: ContextProvider,
     private val dataStorage: DataStorage,
+    private val chatSessionUseCase: ChatSessionUseCase,
     private val userUseCase: UserUseCase,
 ) : ViewModel() {
     private val _stateFlow: MutableStateFlow<State> = MutableStateFlow(State())
@@ -40,7 +42,7 @@ class DashboardViewModel @Inject constructor(
                 // if logged in user name could not fetched, switch to error mode.
                 _stateFlow.reduce {
                     copy(
-                        users = persistentListOf(),
+                        chatSessions = persistentListOf(),
                         loading = false,
                         noData = false,
                         error = true,
@@ -51,12 +53,14 @@ class DashboardViewModel @Inject constructor(
                 _stateFlow.reduce { copy(name = loggedInUsersName) }
 
                 withContext(contextProvider.io) {
-                    userUseCase.getChatMembers(loggedInUsersName)
-                }.onSuccess { receivers ->
-                    if (receivers.isNotEmpty()) {
+                    // TODO getChatSessions should be subscribe.
+                    //  when we add new chat session it should update itself automatically.
+                    chatSessionUseCase.getChatSessions()
+                }.onSuccess { sessions ->
+                    if (sessions.isNotEmpty()) {
                         _stateFlow.reduce {
                             copy(
-                                users = receivers.toPersistentList(),
+                                chatSessions = sessions.toPersistentList(),
                                 loading = false,
                                 noData = false,
                                 error = false,
@@ -65,7 +69,7 @@ class DashboardViewModel @Inject constructor(
                     } else {
                         _stateFlow.reduce {
                             copy(
-                                users = persistentListOf(),
+                                chatSessions = persistentListOf(),
                                 loading = false,
                                 noData = true,
                                 error = false,
@@ -75,7 +79,7 @@ class DashboardViewModel @Inject constructor(
                 }.onFailure {
                     _stateFlow.reduce {
                         copy(
-                            users = persistentListOf(),
+                            chatSessions = persistentListOf(),
                             loading = false,
                             noData = false,
                             error = true,
@@ -87,7 +91,22 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun findNewChatMate() {
+        viewModelScope.launch {
+            withContext(contextProvider.io) {
+                // get logged in user
+                val loggedInUser = userUseCase.getLoggedInUser()
+                // generate new chat mate by fetching via REST endpoint
+                val chatMate = userUseCase.getRandomUser()
 
+                // insert new chat mate
+                userUseCase.saveUser(chatMate)
+                // create chat session
+                chatSessionUseCase.createChatSession(listOf(loggedInUser.id, chatMate.id))
+
+                // TODO adjust fail success states.
+                //  fix here  
+            }
+        }
     }
 
     fun showLogoutDialog() {

@@ -8,7 +8,6 @@ class MessageRepository @Inject constructor(
 ) {
     private val messageDao by lazy { database.getMessageDao() }
 
-    fun getMessages(sender: Long, receiver: Long) = messageDao.getChatHistory(sender, receiver)
+    fun getMessages(chatWindowId: Long) = messageDao.getHistory(chatWindowId)
 
-    suspend fun getReceiverIds(sender: Long) = runCatching { messageDao.getReceiverIds(sender) }
 }

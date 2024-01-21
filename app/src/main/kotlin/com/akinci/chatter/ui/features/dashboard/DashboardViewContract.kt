@@ -1,7 +1,7 @@
 package com.akinci.chatter.ui.features.dashboard
 
 import com.akinci.chatter.core.compose.UIState
-import com.akinci.chatter.domain.user.User
+import com.akinci.chatter.domain.chatwindow.ChatSession
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -9,7 +9,7 @@ object DashboardViewContract {
 
     data class State(
         val name: String = "",
-        val users: PersistentList<User> = persistentListOf(),
+        val chatSessions: PersistentList<ChatSession> = persistentListOf(),
         val loading: Boolean = true,
         val noData: Boolean = false,
         val error: Boolean = false,

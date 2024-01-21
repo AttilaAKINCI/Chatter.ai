@@ -6,6 +6,8 @@ import com.ramcosta.composedestinations.annotation.Destination
 
 @Composable
 @Destination(style = SlideHorizontallyAnimation::class)
-fun MessagingScreen() {
+fun MessagingScreen(
+    chatSessionId: Long,
+) {
     // TODO main chat screen
 }
