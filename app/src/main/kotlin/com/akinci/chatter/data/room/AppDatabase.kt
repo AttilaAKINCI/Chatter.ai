@@ -2,8 +2,8 @@ package com.akinci.chatter.data.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.akinci.chatter.data.room.chat.ChatSessionDao
-import com.akinci.chatter.data.room.chat.ChatSessionEntity
+import com.akinci.chatter.data.room.chatsession.ChatSessionDao
+import com.akinci.chatter.data.room.chatsession.ChatSessionEntity
 import com.akinci.chatter.data.room.message.MessageDao
 import com.akinci.chatter.data.room.message.MessageEntity
 import com.akinci.chatter.data.room.user.UserDao

@@ -1,4 +1,4 @@
-package com.akinci.chatter.data.room.chat
+package com.akinci.chatter.data.room.chatsession
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

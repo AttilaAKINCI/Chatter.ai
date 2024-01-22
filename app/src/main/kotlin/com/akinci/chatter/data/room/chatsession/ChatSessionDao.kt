@@ -1,8 +1,9 @@
-package com.akinci.chatter.data.room.chat
+package com.akinci.chatter.data.room.chatsession
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ChatSessionDao {
@@ -11,5 +12,5 @@ interface ChatSessionDao {
     suspend fun create(chatWindow: ChatSessionEntity)
 
     @Query("SELECT * FROM db_table_chat_sessions WHERE membersIds like '%,' || :memberId || ',%'")
-    suspend fun getSessions(memberId: Long): List<ChatSessionEntity>
+    fun getSessions(memberId: Long): Flow<List<ChatSessionEntity>>
 }

@@ -1,7 +1,7 @@
 package com.akinci.chatter.data.repository
 
 import com.akinci.chatter.data.room.AppDatabase
-import com.akinci.chatter.data.room.chat.ChatSessionEntity
+import com.akinci.chatter.data.room.chatsession.ChatSessionEntity
 import javax.inject.Inject
 
 class ChatSessionRepository @Inject constructor(
@@ -11,11 +11,9 @@ class ChatSessionRepository @Inject constructor(
 
     suspend fun createChatSession(membersIds: List<Long>) = runCatching {
         chatSessionDao.create(
-            ChatSessionEntity(membersIds = membersIds.joinToString(separator = ","))
+            ChatSessionEntity(membersIds = ",${membersIds.joinToString(separator = ",")},")
         )
     }
 
-    suspend fun getChatSessions(memberId: Long) = runCatching {
-        chatSessionDao.getSessions(memberId)
-    }
+    fun getChatSessions(memberId: Long) = chatSessionDao.getSessions(memberId)
 }

@@ -7,5 +7,5 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class ChatSession(
     val sessionId: Long,
-    val members: List<User>,
+    val chatMate: User,
 ) : Parcelable

@@ -2,7 +2,7 @@ package com.akinci.chatter.domain.chatwindow
 
 import com.akinci.chatter.data.repository.ChatSessionRepository
 import com.akinci.chatter.domain.user.UserUseCase
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class ChatSessionUseCase @Inject constructor(
@@ -13,19 +13,17 @@ class ChatSessionUseCase @Inject constructor(
     suspend fun createChatSession(membersIds: List<Long>) =
         chatSessionRepository.createChatSession(membersIds = membersIds)
 
-    suspend fun getChatSessions(): Result<List<ChatSession>> = runCatching {
-        // Simulate network delay
-        delay(500L)
+    fun getChatSessions(memberId: Long) = chatSessionRepository.getChatSessions(memberId)
+        .map {
+            it.map { entity ->
+                val chatMate = entity.membersIds
+                    .removeSurrounding(",")
+                    .split(",")
+                    .filter { id -> id.toLong() != memberId }.firstNotNullOf { id ->
+                        userUseCase.getUser(id.toLong()).getOrNull()
+                    }
 
-        val sender = userUseCase.getLoggedInUser().getOrThrow()
-        val chatSessions = chatSessionRepository.getChatSessions(sender.id).getOrThrow()
-
-        chatSessions.map {
-            val members = it.membersIds.split(",").mapNotNull { id ->
-                userUseCase.getUser(id.toLong()).getOrNull()
-            }
-
-            ChatSession(sessionId = it.id, members = members)
+                ChatSession(sessionId = entity.id, chatMate = chatMate)
+            }.reversed()
         }
-    }
 }

@@ -15,13 +15,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -38,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
@@ -50,11 +52,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.akinci.chatter.R
 import com.akinci.chatter.core.compose.UIModePreviews
 import com.akinci.chatter.domain.chatwindow.ChatSession
+import com.akinci.chatter.ui.ds.components.CachedImage
 import com.akinci.chatter.ui.ds.components.Dialog
 import com.akinci.chatter.ui.ds.components.LoadingButton
+import com.akinci.chatter.ui.ds.components.snackbar.SnackBarContainer
 import com.akinci.chatter.ui.ds.theme.ChatterTheme
 import com.akinci.chatter.ui.ds.theme.DarkYellow
 import com.akinci.chatter.ui.ds.theme.bodyLarge_swash
+import com.akinci.chatter.ui.ds.theme.oval
 import com.akinci.chatter.ui.features.NavGraphs
 import com.akinci.chatter.ui.features.dashboard.DashboardViewContract.State
 import com.akinci.chatter.ui.features.destinations.MessagingScreenDestination
@@ -88,9 +93,9 @@ fun DashboardScreen(
         uiState = uiState,
         onLogoutClick = { vm.showLogoutDialog() },
         onNewChatMateButtonClick = { vm.findNewChatMate() },
-        onChatSessionClick = { sessionId ->
+        onChatSessionClick = { session ->
             navigator.navigate(
-                MessagingScreenDestination(chatSessionId = sessionId)
+                MessagingScreenDestination(session = session)
             )
         }
     )
@@ -112,47 +117,52 @@ private fun DashboardScreenContent(
     uiState: State,
     onLogoutClick: () -> Unit,
     onNewChatMateButtonClick: () -> Unit,
-    onChatSessionClick: (Long) -> Unit,
+    onChatSessionClick: (ChatSession) -> Unit,
 ) {
     Surface {
-        Column(
+        SnackBarContainer(
             modifier = Modifier
-                .fillMaxSize()
                 .windowInsetsPadding(WindowInsets.navigationBars)
+                .fillMaxSize(),
+            snackBarState = uiState.snackBarState,
         ) {
-            DashboardScreen.TopBar(
-                name = uiState.name,
-                onLogoutClick = onLogoutClick,
-            )
-
-            when {
-                uiState.error -> DashboardScreen.Info(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(id = R.string.dashboard_screen_error),
-                    image = painterResource(id = R.drawable.ic_error_128dp),
-                    tint = MaterialTheme.colorScheme.onSurface,
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                DashboardScreen.TopBar(
+                    name = uiState.loggedInUser?.name.orEmpty(),
+                    onLogoutClick = onLogoutClick,
                 )
 
-                uiState.noData -> DashboardScreen.Info(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(id = R.string.dashboard_screen_no_data),
-                    image = painterResource(id = R.drawable.ic_no_data_128dp),
-                    tint = Color.DarkYellow,
-                )
+                when {
+                    uiState.error -> DashboardScreen.Info(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(id = R.string.dashboard_screen_error),
+                        image = painterResource(id = R.drawable.ic_error_128dp),
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
 
-                uiState.loading -> DashboardScreen.Loading(modifier = Modifier.weight(1f))
+                    uiState.noData -> DashboardScreen.Info(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(id = R.string.dashboard_screen_no_data),
+                        image = painterResource(id = R.drawable.ic_no_data_128dp),
+                        tint = Color.DarkYellow,
+                    )
 
-                else -> DashboardScreen.Content(
-                    modifier = Modifier.weight(1f),
-                    sessions = uiState.chatSessions,
-                    onClick = onChatSessionClick,
+                    uiState.loading -> DashboardScreen.Loading(modifier = Modifier.weight(1f))
+
+                    else -> DashboardScreen.Content(
+                        modifier = Modifier.weight(1f),
+                        sessions = uiState.chatSessions,
+                        onClick = onChatSessionClick,
+                    )
+                }
+
+                DashboardScreen.Footer(
+                    isLoading = uiState.isNewChatButtonLoading,
+                    onNewChatMateButtonClick = onNewChatMateButtonClick,
                 )
             }
-
-            DashboardScreen.Footer(
-                isLoading = uiState.isNewChatButtonLoading,
-                onNewChatMateButtonClick = onNewChatMateButtonClick,
-            )
         }
     }
 }
@@ -168,7 +178,11 @@ private fun DashboardScreen.TopBar(
     TopAppBar(
         title = {
             Text(
-                text = stringResource(id = R.string.dashboard_screen_top_bar_title, name),
+                text = buildString {
+                    append(stringResource(id = R.string.dashboard_screen_top_bar_title))
+                    if (name.isNotBlank()) append(", $name")
+                    append(stringResource(id = R.string.dashboard_screen_top_bar_title_tail))
+                },
                 style = MaterialTheme.typography.bodyLarge_swash
             )
         },
@@ -238,34 +252,50 @@ private fun DashboardScreen.Loading(
 private fun DashboardScreen.Content(
     modifier: Modifier = Modifier,
     sessions: PersistentList<ChatSession>,
-    onClick: (Long) -> Unit,
+    onClick: (ChatSession) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
         state = rememberLazyListState()
     ) {
-        items(sessions) {
-            Row(
+        itemsIndexed(sessions) { index, item ->
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(
                         indication = rememberRipple(),
                         interactionSource = remember { MutableInteractionSource() },
-                        onClick = { onClick(it.sessionId) },
-                    ),
-                verticalAlignment = Alignment.CenterVertically,
+                        onClick = { onClick(item) },
+                    )
             ) {
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(text = "#${it.sessionId}")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    CachedImage(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .size(64.dp)
+                            .clip(MaterialTheme.shapes.oval),
+                        imageUrl = item.chatMate.imageUrl
+                    )
+
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = item.chatMate.name,
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                    }
+
+                    Icon(
+                        modifier = Modifier.padding(16.dp),
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                    )
                 }
 
-                Icon(
-                    modifier = Modifier.padding(16.dp),
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = null,
-                )
+                if (index < sessions.size - 1) {
+                    Divider()
+                }
             }
         }
     }
