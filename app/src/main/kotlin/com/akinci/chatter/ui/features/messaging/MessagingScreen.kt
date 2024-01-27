@@ -1,28 +1,33 @@
 package com.akinci.chatter.ui.features.messaging
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,23 +40,31 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.akinci.chatter.R
 import com.akinci.chatter.core.compose.UIModePreviews
 import com.akinci.chatter.domain.chatwindow.ChatSession
+import com.akinci.chatter.domain.message.MessageItem
 import com.akinci.chatter.domain.user.User
 import com.akinci.chatter.ui.ds.components.CachedImage
+import com.akinci.chatter.ui.ds.components.IconButton
 import com.akinci.chatter.ui.ds.components.TiledBackground
 import com.akinci.chatter.ui.ds.theme.ChatterTheme
 import com.akinci.chatter.ui.ds.theme.oval
 import com.akinci.chatter.ui.features.messaging.MessagingViewContract.ScreenArgs
 import com.akinci.chatter.ui.features.messaging.MessagingViewContract.State
+import com.akinci.chatter.ui.features.messaging.component.LeftAlignedBubbleMessage
+import com.akinci.chatter.ui.features.messaging.component.RightAlignedBubbleMessage
+import com.akinci.chatter.ui.features.messaging.component.TypeIndicatorBubbleMessage
 import com.akinci.chatter.ui.navigation.animation.SlideHorizontallyAnimation
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -67,6 +80,8 @@ fun MessagingScreen(
 
     MessagingScreenContent(
         uiState = uiState,
+        onTextChanged = { vm.onTextChanged(it) },
+        onSendButtonClick = { vm.onSendButtonClick() },
         onBackClick = { navigator.navigateUp() },
     )
 }
@@ -74,6 +89,8 @@ fun MessagingScreen(
 @Composable
 private fun MessagingScreenContent(
     uiState: State,
+    onTextChanged: (String) -> Unit,
+    onSendButtonClick: () -> Unit,
     onBackClick: () -> Unit,
 ) {
     Surface {
@@ -94,13 +111,15 @@ private fun MessagingScreenContent(
                     onBackClick = onBackClick,
                 )
 
-                // messaging area
-                Column(modifier = Modifier.weight(1f)) {
-
-                }
+                MessagingScreen.Messages(
+                    modifier = Modifier.weight(1f),
+                    messages = uiState.messages,
+                )
 
                 MessagingScreen.Footer(
-                    onSendButtonClick = {},
+                    text = uiState.text,
+                    onTextChanged = onTextChanged,
+                    onSendButtonClick = onSendButtonClick,
                 )
             }
         }
@@ -141,12 +160,11 @@ private fun MessagingScreen.TopBar(
             navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
         ),
         navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = null
-                )
-            }
+            IconButton(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                painter = rememberVectorPainter(image = Icons.Rounded.ArrowBack),
+                onClick = onBackClick
+            )
         }
     )
     Divider()
@@ -154,6 +172,8 @@ private fun MessagingScreen.TopBar(
 
 @Composable
 private fun MessagingScreen.Footer(
+    text: String,
+    onTextChanged: (String) -> Unit,
     onSendButtonClick: () -> Unit
 ) {
     Column(
@@ -178,28 +198,74 @@ private fun MessagingScreen.Footer(
                     unfocusedIndicatorColor = MaterialTheme.colorScheme.surfaceVariant,
                 ),
                 singleLine = true,
-                value = "asd",
+                value = text,
+                textStyle = MaterialTheme.typography.bodyMedium,
                 trailingIcon = {
-                    // TODO add clear icon.
+                    AnimatedVisibility(
+                        visible = text.isNotBlank(),
+                        enter = scaleIn() + fadeIn(),
+                        exit = scaleOut() + fadeOut(),
+                    ) {
+                        IconButton(
+                            painter = rememberVectorPainter(image = Icons.Default.Cancel),
+                            size = 24.dp,
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            tintColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            onClick = { onTextChanged("") }
+                        )
+                    }
                 },
-                onValueChange = {},
+                placeholder = {
+                    Text(
+                        text = stringResource(id = R.string.messaging_screen_text_placeholder),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                },
+                onValueChange = onTextChanged,
             )
             Spacer(modifier = Modifier.width(8.dp))
             IconButton(
-                onClick = onSendButtonClick,
-                colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_send),
-                    contentDescription = null,
-                )
-            }
+                painter = painterResource(id = R.drawable.ic_send),
+                size = 56.dp,
+                containerColor = MaterialTheme.colorScheme.primary,
+                tintColor = MaterialTheme.colorScheme.onPrimary,
+                onClick = onSendButtonClick
+            )
         }
     }
 }
 
+@Composable
+private fun MessagingScreen.Messages(
+    modifier: Modifier = Modifier,
+    messages: PersistentList<MessageItem>,
+) {
+    Column(modifier = modifier) {
+        Spacer(modifier = Modifier.weight(1f))
+        LazyColumn(
+            state = rememberLazyListState(),
+            reverseLayout = true,
+            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            items(messages) { messageItem ->
+                when (messageItem) {
+                    is MessageItem.TypeIndicatorItem -> TypeIndicatorBubbleMessage()
+                    is MessageItem.InboundMessageItem -> LeftAlignedBubbleMessage(
+                        text = messageItem.text,
+                        time = messageItem.time,
+                    )
+
+                    is MessageItem.OutboundMessageItem -> RightAlignedBubbleMessage(
+                        text = messageItem.text,
+                        time = messageItem.time
+                    )
+                }
+            }
+        }
+    }
+}
 
 @UIModePreviews
 @Composable
@@ -211,15 +277,26 @@ private fun MessagingScreenPreview() {
                     sessionId = 100L,
                     chatMate = User(
                         id = 1,
-                        name = "Attila Akinci",
+                        name = "Jessica Alba",
                         userName = "attilaakinci",
                         imageUrl = "",
                         phone = "+3164637829",
                         nationality = "TR",
                     )
                 ),
-                messages = persistentListOf(),
+                messages = persistentListOf(
+                    MessageItem.OutboundMessageItem(
+                        text = "Hello, I am Attila :) How are you ?",
+                        time = "21:00"
+                    ),
+                    MessageItem.InboundMessageItem(
+                        text = "Hi there !! I am just fine. What about you ?",
+                        time = "21:01"
+                    ),
+                ),
             ),
+            onTextChanged = {},
+            onSendButtonClick = {},
             onBackClick = {},
         )
     }

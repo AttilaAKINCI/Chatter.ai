@@ -29,5 +29,7 @@
     <string name="dashboard_screen_chat_session_create_error">New chat session could not be created.</string>
     <string name="dashboard_screen_chat_session_successfully_created">Congratulations !! You have a new chat mate !!</string>
 
+    <string name="messaging_screen_text_placeholder">Message</string>
+
     <string name="general_connection_problem">Please check your internet connection and try again later.</string>
 </resources>

@@ -10,6 +10,6 @@ interface MessageDao {
     @Insert
     suspend fun insertMessage(message: MessageEntity)
 
-    @Query("SELECT * FROM db_table_message WHERE chatWindowId = :charWindowId ORDER BY id ASC")
-    fun getHistory(charWindowId: Long): Flow<MessageEntity>
+    @Query("SELECT * FROM db_table_message WHERE chatSessionId = :chatSessionId ORDER BY id DESC")
+    fun getHistory(chatSessionId: Long): Flow<List<MessageEntity>>
 }

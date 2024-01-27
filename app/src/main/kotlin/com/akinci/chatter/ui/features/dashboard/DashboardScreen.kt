@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -258,14 +259,14 @@ private fun DashboardScreen.Content(
         modifier = modifier.fillMaxWidth(),
         state = rememberLazyListState()
     ) {
-        itemsIndexed(sessions) { index, item ->
+        items(sessions) { session ->
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(
                         indication = rememberRipple(),
                         interactionSource = remember { MutableInteractionSource() },
-                        onClick = { onClick(item) },
+                        onClick = { onClick(session) },
                     )
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -274,14 +275,14 @@ private fun DashboardScreen.Content(
                             .padding(16.dp)
                             .size(64.dp)
                             .clip(MaterialTheme.shapes.oval),
-                        imageUrl = item.chatMate.imageUrl
+                        imageUrl = session.chatMate.imageUrl
                     )
 
                     Column(
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
-                            text = item.chatMate.name,
+                            text = session.chatMate.name,
                             style = MaterialTheme.typography.bodyLarge,
                         )
                     }
@@ -293,9 +294,7 @@ private fun DashboardScreen.Content(
                     )
                 }
 
-                if (index < sessions.size - 1) {
-                    Divider()
-                }
+                Divider()
             }
         }
     }
