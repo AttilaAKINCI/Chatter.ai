@@ -54,13 +54,11 @@ import com.akinci.chatter.domain.user.User
 import com.akinci.chatter.ui.ds.components.CachedImage
 import com.akinci.chatter.ui.ds.components.IconButton
 import com.akinci.chatter.ui.ds.components.TiledBackground
+import com.akinci.chatter.ui.ds.components.BubbleMessage
 import com.akinci.chatter.ui.ds.theme.ChatterTheme
 import com.akinci.chatter.ui.ds.theme.oval
 import com.akinci.chatter.ui.features.messaging.MessagingViewContract.ScreenArgs
 import com.akinci.chatter.ui.features.messaging.MessagingViewContract.State
-import com.akinci.chatter.ui.features.messaging.component.LeftAlignedBubbleMessage
-import com.akinci.chatter.ui.features.messaging.component.RightAlignedBubbleMessage
-import com.akinci.chatter.ui.features.messaging.component.TypeIndicatorBubbleMessage
 import com.akinci.chatter.ui.navigation.animation.SlideHorizontallyAnimation
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -250,18 +248,7 @@ private fun MessagingScreen.Messages(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             items(messages) { messageItem ->
-                when (messageItem) {
-                    is MessageItem.TypeIndicatorItem -> TypeIndicatorBubbleMessage()
-                    is MessageItem.InboundMessageItem -> LeftAlignedBubbleMessage(
-                        text = messageItem.text,
-                        time = messageItem.time,
-                    )
-
-                    is MessageItem.OutboundMessageItem -> RightAlignedBubbleMessage(
-                        text = messageItem.text,
-                        time = messageItem.time
-                    )
-                }
+                BubbleMessage(messageItem = messageItem)
             }
         }
     }
@@ -285,6 +272,7 @@ private fun MessagingScreenPreview() {
                     )
                 ),
                 messages = persistentListOf(
+                    MessageItem.TypeIndicatorItem,
                     MessageItem.OutboundMessageItem(
                         text = "Hello, I am Attila :) How are you ?",
                         time = "21:00"

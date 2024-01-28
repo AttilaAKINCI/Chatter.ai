@@ -19,6 +19,6 @@ object DashboardViewContract {
         val logoutUser: Boolean = false,
         val isLogoutDialogVisible: Boolean = false,
 
-        val snackBarState: SnackBarState? = null,
+        val snackBarState: SnackBarState? = null, // TODO convert to channel usage.
     ) : UIState
 }

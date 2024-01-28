@@ -11,7 +11,7 @@ object LoginViewContract {
         val isLoginButtonLoading: Boolean = false,
         val isRegisterButtonLoading: Boolean = false,
 
-        val snackBarState: SnackBarState? = null,
+        val snackBarState: SnackBarState? = null, // TODO convert to channel usage.
         val navigateToDashboard: Boolean = false,
     ) : UIState
 }
