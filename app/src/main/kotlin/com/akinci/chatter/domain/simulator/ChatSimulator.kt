@@ -15,12 +15,12 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 /**
- * [MessagingSimulator] is a wrapper service that taps ongoing messaging flow and adds simulation of
+ * [ChatSimulator] is a wrapper service that taps ongoing messaging flow and adds simulation of
  * chat mate's responses and adjusts typing indicator.
  *
- * MessagingSimulator is designed to answer send messages by the actual user.
+ * [ChatSimulator] is designed to answer send messages by the actual user.
  * **/
-class MessagingSimulator @Inject constructor(
+class ChatSimulator @Inject constructor(
     private val messageUseCase: MessageUseCase,
 ) {
     private val coroutineScope by lazy { CoroutineScope(Job() + Dispatchers.Main) }

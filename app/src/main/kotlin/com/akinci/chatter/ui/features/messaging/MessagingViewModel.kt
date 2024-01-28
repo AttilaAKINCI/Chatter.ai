@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.akinci.chatter.core.compose.reduce
 import com.akinci.chatter.core.coroutine.ContextProvider
-import com.akinci.chatter.domain.simulator.MessagingSimulator
+import com.akinci.chatter.domain.simulator.ChatSimulator
 import com.akinci.chatter.domain.user.UserUseCase
 import com.akinci.chatter.ui.features.messaging.MessagingViewContract.ScreenArgs
 import com.akinci.chatter.ui.features.messaging.MessagingViewContract.State
@@ -25,7 +25,7 @@ class MessagingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val contextProvider: ContextProvider,
     private val userUseCase: UserUseCase,
-    private val messagingSimulator: MessagingSimulator,
+    private val chatSimulator: ChatSimulator,
 ) : ViewModel() {
     private val screenArgs by lazy { savedStateHandle.navArgs<ScreenArgs>() }
 
@@ -39,7 +39,7 @@ class MessagingViewModel @Inject constructor(
         getLoggedInUser()
 
         // activate messaging simulator.
-        messagingSimulator.activateOn(chatSessionId = screenArgs.session.sessionId)
+        chatSimulator.activateOn(chatSessionId = screenArgs.session.sessionId)
     }
 
     private fun getLoggedInUser() {
@@ -57,7 +57,7 @@ class MessagingViewModel @Inject constructor(
     }
 
     private fun subscribeToChatSimulatorMessages() {
-        messagingSimulator.messageFlow
+        chatSimulator.messageFlow
             .onEach { newMessages ->
                 // update ui with new messages
                 _stateFlow.reduce {
@@ -81,7 +81,7 @@ class MessagingViewModel @Inject constructor(
 
             withContext(contextProvider.io) {
                 // Send loggedInUser's message.
-                messagingSimulator.send(
+                chatSimulator.send(
                     chatSessionId = state.session.sessionId,
                     ownerUserId = state.loggedInUser.id,
                     text = state.text,
