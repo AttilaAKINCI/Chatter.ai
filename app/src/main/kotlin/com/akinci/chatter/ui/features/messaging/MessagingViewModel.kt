@@ -74,6 +74,7 @@ class MessagingViewModel @Inject constructor(
     fun onSendButtonClick() {
         val state = stateFlow.value
         if (state.loggedInUser == null) return
+        if (state.text.isBlank()) return
 
         viewModelScope.launch {
             // clear typed text on ui.
