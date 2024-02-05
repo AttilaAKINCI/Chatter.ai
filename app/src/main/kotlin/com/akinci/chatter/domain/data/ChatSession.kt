@@ -1,7 +1,6 @@
-package com.akinci.chatter.domain.chatwindow
+package com.akinci.chatter.domain.data
 
 import android.os.Parcelable
-import com.akinci.chatter.domain.user.User
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

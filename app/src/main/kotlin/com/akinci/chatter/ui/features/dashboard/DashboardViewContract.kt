@@ -1,8 +1,8 @@
 package com.akinci.chatter.ui.features.dashboard
 
 import com.akinci.chatter.core.compose.UIState
-import com.akinci.chatter.domain.chatwindow.ChatSession
-import com.akinci.chatter.domain.user.User
+import com.akinci.chatter.domain.data.ChatSession
+import com.akinci.chatter.domain.data.User
 import com.akinci.chatter.ui.ds.components.snackbar.SnackBarState
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf

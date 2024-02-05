@@ -6,7 +6,8 @@ import com.akinci.chatter.R
 import com.akinci.chatter.core.compose.reduce
 import com.akinci.chatter.core.coroutine.ContextProvider
 import com.akinci.chatter.data.datastore.DataStorage
-import com.akinci.chatter.domain.user.UserUseCase
+import com.akinci.chatter.data.exception.UserFetchError
+import com.akinci.chatter.data.repository.UserRepository
 import com.akinci.chatter.ui.ds.components.snackbar.SnackBarState
 import com.akinci.chatter.ui.features.login.LoginViewContract.State
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +24,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val contextProvider: ContextProvider,
     private val dataStorage: DataStorage,
-    private val userUseCase: UserUseCase,
+    private val userRepository: UserRepository,
 ) : ViewModel() {
     private val _stateFlow: MutableStateFlow<State> = MutableStateFlow(State())
     val stateFlow = _stateFlow.asStateFlow()
@@ -95,14 +96,16 @@ class LoginViewModel @Inject constructor(
             if (!verifyUser()) {
                 // user couldn't found in local database so we can create new one and replace user's name
                 val user = withContext(contextProvider.io) {
-                    userUseCase.getRandomUser().map {
-                        it?.copy(name = stateFlow.value.name)
+                    userRepository.generateRandomUser().map {
+                        it.copy(name = stateFlow.value.name)
                     }
                 }.onFailure {
                     // our random user creation rest call is failed.
                     val errorMessageId = when (it) {
                         is SocketTimeoutException,
                         is UnknownHostException -> R.string.general_connection_problem
+
+                        is UserFetchError -> R.string.login_screen_error_user_generation
 
                         else -> R.string.login_screen_error_general
                     }
@@ -119,7 +122,7 @@ class LoginViewModel @Inject constructor(
 
                 if (user != null) {
                     withContext(contextProvider.io) {
-                        userUseCase.saveUser(user)
+                        userRepository.create(user)
                     }.onSuccess {
                         // we successfully created and saved new user.
                         // to simulate successful login save user's name to local storage (auto log in)
@@ -180,7 +183,7 @@ class LoginViewModel @Inject constructor(
 
     private suspend fun verifyUser(): Boolean {
         return withContext(contextProvider.io) {
-            userUseCase.verifyUser(stateFlow.value.name)
+            userRepository.get(stateFlow.value.name).getOrNull() != null
         }
     }
 

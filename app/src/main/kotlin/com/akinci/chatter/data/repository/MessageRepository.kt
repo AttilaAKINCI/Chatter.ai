@@ -1,32 +1,34 @@
 package com.akinci.chatter.data.repository
 
 import com.akinci.chatter.core.utils.DateTimeFormat
-import com.akinci.chatter.data.room.AppDatabase
+import com.akinci.chatter.data.mapper.toDomain
+import com.akinci.chatter.data.room.message.MessageDao
 import com.akinci.chatter.data.room.message.MessageEntity
+import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import java.time.ZonedDateTime
 import javax.inject.Inject
 
 class MessageRepository @Inject constructor(
-    private val database: AppDatabase,
+    private val messageDao: MessageDao,
 ) {
-    private val messageDao by lazy { database.getMessageDao() }
+    fun get(chatSessionId: Long) = messageDao.get(chatSessionId)
+        .map { messages -> messages.map { it.toDomain() } }
 
-    suspend fun send(
+    suspend fun save(
         chatSessionId: Long,
-        ownerUserId: Long,
+        primaryUserId: Long,
         text: String,
-        date: String,
     ) = runCatching {
-        messageDao.insertMessage(
+        messageDao.save(
             MessageEntity(
                 chatSessionId = chatSessionId,
-                ownerUserId = ownerUserId,
+                senderUserId = primaryUserId,
                 text = text,
-                date = date,
+                date = DateTimeFormat.STORE.format(ZonedDateTime.now()).orEmpty(),
             )
         )
+    }.onFailure {
+        Timber.e(it, "Message couldn't be send. Text: $text - Owner: $primaryUserId")
     }
-
-    fun getMessages(chatSessionId: Long) = messageDao.getHistory(chatSessionId)
-
 }

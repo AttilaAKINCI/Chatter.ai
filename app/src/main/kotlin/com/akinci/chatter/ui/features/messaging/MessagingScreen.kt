@@ -48,9 +48,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.akinci.chatter.R
 import com.akinci.chatter.core.compose.UIModePreviews
-import com.akinci.chatter.domain.chatwindow.ChatSession
-import com.akinci.chatter.domain.message.MessageItem
-import com.akinci.chatter.domain.user.User
+import com.akinci.chatter.domain.data.ChatSession
+import com.akinci.chatter.domain.data.MessageItem
+import com.akinci.chatter.domain.data.User
 import com.akinci.chatter.ui.ds.components.CachedImage
 import com.akinci.chatter.ui.ds.components.IconButton
 import com.akinci.chatter.ui.ds.components.TiledBackground

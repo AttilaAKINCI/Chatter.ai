@@ -2,9 +2,9 @@ package com.akinci.chatter.ui.features.messaging
 
 import android.os.Parcelable
 import com.akinci.chatter.core.compose.UIState
-import com.akinci.chatter.domain.chatwindow.ChatSession
-import com.akinci.chatter.domain.message.MessageItem
-import com.akinci.chatter.domain.user.User
+import com.akinci.chatter.domain.data.ChatSession
+import com.akinci.chatter.domain.data.MessageItem
+import com.akinci.chatter.domain.data.User
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.parcelize.Parcelize

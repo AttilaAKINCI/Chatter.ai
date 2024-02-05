@@ -1,8 +1,8 @@
-package com.akinci.chatter.domain.mapper
+package com.akinci.chatter.data.mapper
 
 import com.akinci.chatter.data.rest.user.UserResponse
 import com.akinci.chatter.data.room.user.UserEntity
-import com.akinci.chatter.domain.user.User
+import com.akinci.chatter.domain.data.User
 
 fun UserEntity.toDomain() = User(
     id = id,

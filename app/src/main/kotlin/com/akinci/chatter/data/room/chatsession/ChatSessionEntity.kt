@@ -8,5 +8,6 @@ import com.akinci.chatter.data.room.AppDatabaseKeys
 data class ChatSessionEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
-    val membersIds: String,
+    val primaryUserId: Long,
+    val secondaryUserId: Long,
 )

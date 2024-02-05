@@ -1,4 +1,4 @@
-package com.akinci.chatter.domain.message
+package com.akinci.chatter.domain.data
 
 sealed class MessageItem {
     data object TypeIndicatorItem : MessageItem()

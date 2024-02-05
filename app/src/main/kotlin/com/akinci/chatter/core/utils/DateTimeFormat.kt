@@ -13,6 +13,12 @@ enum class DateTimeFormat(
     fun format(dateTime: ZonedDateTime?): String? = runCatching {
         formatter.format(dateTime)
     }.onFailure {
-        Timber.e(it, "dateTime couldn't be formatted: $it")
+        Timber.e(it, "dateTime(ZonedDateTime) couldn't be formatted: $it")
+    }.getOrNull()
+
+    fun format(dateTime: String): String? = runCatching {
+        formatter.format(ZonedDateTime.parse(dateTime))
+    }.onFailure {
+        Timber.e(it, "dateTime(String) couldn't be formatted: $it")
     }.getOrNull()
 }

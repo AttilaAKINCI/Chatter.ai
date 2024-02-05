@@ -1,4 +1,4 @@
-package com.akinci.chatter.domain.user
+package com.akinci.chatter.domain.data
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

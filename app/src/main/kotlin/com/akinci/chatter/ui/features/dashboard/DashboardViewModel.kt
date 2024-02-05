@@ -7,8 +7,9 @@ import com.akinci.chatter.R
 import com.akinci.chatter.core.compose.reduce
 import com.akinci.chatter.core.coroutine.ContextProvider
 import com.akinci.chatter.data.datastore.DataStorage
-import com.akinci.chatter.domain.chatwindow.ChatSessionUseCase
-import com.akinci.chatter.domain.user.UserUseCase
+import com.akinci.chatter.data.repository.ChatSessionRepository
+import com.akinci.chatter.data.repository.UserRepository
+import com.akinci.chatter.domain.GetPrimaryUserUseCase
 import com.akinci.chatter.ui.ds.components.snackbar.SnackBarState
 import com.akinci.chatter.ui.features.dashboard.DashboardViewContract.State
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,8 +28,9 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     private val contextProvider: ContextProvider,
     private val dataStorage: DataStorage,
-    private val chatSessionUseCase: ChatSessionUseCase,
-    private val userUseCase: UserUseCase,
+    private val chatSessionRepository: ChatSessionRepository,
+    private val userRepository: UserRepository,
+    private val getPrimaryUserUseCase: GetPrimaryUserUseCase,
 ) : ViewModel() {
     private val _stateFlow: MutableStateFlow<State> = MutableStateFlow(State())
     val stateFlow = _stateFlow.asStateFlow()
@@ -40,7 +42,7 @@ class DashboardViewModel @Inject constructor(
     private fun prepareInitialUIState() {
         viewModelScope.launch {
             withContext(contextProvider.io) {
-                userUseCase.getLoggedInUser()
+                getPrimaryUserUseCase.execute()
             }.onSuccess {
                 // send logged in user info immediately to UI.
                 _stateFlow.reduce { copy(loggedInUser = it) }
@@ -63,7 +65,7 @@ class DashboardViewModel @Inject constructor(
     }
 
     private fun subscribeToChatSessionUpdates(loggedInUserId: Long) {
-        chatSessionUseCase.getChatSessions(memberId = loggedInUserId)
+        chatSessionRepository.get(memberId = loggedInUserId)
             .onEach { sessions ->
                 if (sessions.isNotEmpty()) {
                     _stateFlow.reduce {
@@ -93,15 +95,16 @@ class DashboardViewModel @Inject constructor(
 
             withContext(contextProvider.io) {
                 // generate new chat mate by fetching via REST endpoint
-                userUseCase.getRandomUser()
+                userRepository.generateRandomUser()
                     .onSuccess { chatMate ->
-                        // insert new chat mate
-                        userUseCase.saveUser(chatMate)
+                        // create new chat mate
+                        userRepository.create(chatMate)
                             .map { chatMate.copy(id = it) }
                             .onSuccess { savedUser ->
                                 // create chat session
-                                chatSessionUseCase.createChatSession(
-                                    listOf(loggedInUser.id, savedUser.id)
+                                chatSessionRepository.create(
+                                    primaryUserId = loggedInUser.id,
+                                    secondaryUserId = savedUser.id
                                 ).onSuccess {
                                     // New chat session is successfully saved.
                                     sendSnackBarMessage(

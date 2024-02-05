@@ -23,4 +23,13 @@ object DataModule {
         Room.databaseBuilder(context, AppDatabase::class.java, AppDatabaseKeys.DB_NAME)
             .fallbackToDestructiveMigration()
             .build()
+
+    @Provides
+    fun getChatSessionDao(database: AppDatabase) = database.getChatSessionDao()
+
+    @Provides
+    fun getMessageDao(database: AppDatabase) = database.getMessageDao()
+
+    @Provides
+    fun getUserDao(database: AppDatabase) = database.getUserDao()
 }

@@ -3,9 +3,11 @@ package com.akinci.chatter.data.repository
 import com.akinci.chatter.core.network.toResponse
 import com.akinci.chatter.data.exception.UserFetchError
 import com.akinci.chatter.data.exception.UserNotFound
+import com.akinci.chatter.data.mapper.toData
+import com.akinci.chatter.data.mapper.toDomain
 import com.akinci.chatter.data.rest.user.UserServiceResponse
-import com.akinci.chatter.data.room.AppDatabase
-import com.akinci.chatter.data.room.user.UserEntity
+import com.akinci.chatter.data.room.user.UserDao
+import com.akinci.chatter.domain.data.User
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import timber.log.Timber
@@ -13,33 +15,33 @@ import javax.inject.Inject
 
 class UserRepository @Inject constructor(
     private val httpClient: HttpClient,
-    private val database: AppDatabase,
+    private val userDao: UserDao,
 ) {
-    private val userDao by lazy { database.getUserDao() }
-
     // region LOCAL
-    suspend fun createUser(user: UserEntity) = runCatching { userDao.createUser(user) }
+    suspend fun create(user: User) = runCatching { userDao.create(user.toData()) }
 
-    suspend fun getUser(name: String) = runCatching {
-        userDao.getUser(name) ?: throw UserNotFound()
+    suspend fun get(name: String) = runCatching {
+        userDao.get(name) ?: throw UserNotFound()
     }.onFailure {
-        Timber.e(it)
+        Timber.e(it, "User couldn't acquired from ROOM db by name")
     }
 
-    suspend fun getUser(id: Long) = runCatching {
-        userDao.getUser(id) ?: throw UserNotFound()
+    suspend fun get(id: Long) = runCatching {
+        userDao.get(id) ?: throw UserNotFound()
     }.onFailure {
-        Timber.e(it)
+        Timber.e(it, "User couldn't acquired from ROOM db by id")
     }
 
     // endregion
 
     // region REMOTE
-    suspend fun getRandomUser() = runCatching {
+    suspend fun generateRandomUser() = runCatching {
         httpClient.get("api/")
             .toResponse<UserServiceResponse>()
             .map { it.results.firstOrNull() ?: throw UserFetchError() }
             .getOrThrow()
+    }.map {
+        it.toDomain()
     }.onFailure {
         Timber.e(it)
     }

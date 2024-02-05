@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.akinci.chatter.core.compose.reduce
 import com.akinci.chatter.core.coroutine.ContextProvider
-import com.akinci.chatter.domain.simulator.ChatSimulator
-import com.akinci.chatter.domain.user.UserUseCase
+import com.akinci.chatter.domain.ChatSimulator
+import com.akinci.chatter.domain.GetPrimaryUserUseCase
 import com.akinci.chatter.ui.features.messaging.MessagingViewContract.ScreenArgs
 import com.akinci.chatter.ui.features.messaging.MessagingViewContract.State
 import com.akinci.chatter.ui.features.navArgs
@@ -24,7 +24,7 @@ import javax.inject.Inject
 class MessagingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val contextProvider: ContextProvider,
-    private val userUseCase: UserUseCase,
+    private val getPrimaryUserUseCase: GetPrimaryUserUseCase,
     private val chatSimulator: ChatSimulator,
 ) : ViewModel() {
     private val screenArgs by lazy { savedStateHandle.navArgs<ScreenArgs>() }
@@ -39,24 +39,24 @@ class MessagingViewModel @Inject constructor(
         getLoggedInUser()
 
         // activate messaging simulator.
-        chatSimulator.activateOn(chatSessionId = screenArgs.session.sessionId)
+        chatSimulator.activateOn(session = screenArgs.session)
     }
 
     private fun getLoggedInUser() {
         viewModelScope.launch {
             withContext(contextProvider.io) {
-                userUseCase.getLoggedInUser()
+                getPrimaryUserUseCase.execute()
             }.onSuccess {
                 // save logged in user for further needs
                 _stateFlow.reduce { copy(loggedInUser = it) }
 
-                // subscribe chat simulator messages
-                subscribeToChatSimulatorMessages()
+                // subscribe messages
+                subscribeToMessages()
             }
         }
     }
 
-    private fun subscribeToChatSimulatorMessages() {
+    private fun subscribeToMessages() {
         chatSimulator.messageFlow
             .onEach { newMessages ->
                 // update ui with new messages

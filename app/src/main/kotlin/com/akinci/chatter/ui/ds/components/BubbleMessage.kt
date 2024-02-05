@@ -20,10 +20,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.akinci.chatter.R
 import com.akinci.chatter.core.compose.UIModePreviews
-import com.akinci.chatter.domain.message.MessageItem
+import com.akinci.chatter.domain.data.MessageItem
 import com.akinci.chatter.ui.ds.theme.ChatterTheme
 
 /**

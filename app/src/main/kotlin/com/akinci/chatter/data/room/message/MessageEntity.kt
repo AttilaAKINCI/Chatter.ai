@@ -9,7 +9,7 @@ data class MessageEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
     val chatSessionId: Long,
-    val ownerUserId: Long,
+    val senderUserId: Long,
     val date: String,
     val text: String,
 )

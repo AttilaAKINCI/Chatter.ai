@@ -7,11 +7,11 @@ import androidx.room.Query
 @Dao
 interface UserDao {
     @Insert
-    suspend fun createUser(userEntity: UserEntity): Long
+    suspend fun create(userEntity: UserEntity): Long
 
     @Query("SELECT * FROM db_table_user WHERE name= :name")
-    suspend fun getUser(name: String): UserEntity?
+    suspend fun get(name: String): UserEntity?
 
     @Query("SELECT * FROM db_table_user WHERE id= :id")
-    suspend fun getUser(id: Long): UserEntity?
+    suspend fun get(id: Long): UserEntity?
 }

@@ -1,19 +1,21 @@
 package com.akinci.chatter.data.repository
 
-import com.akinci.chatter.data.room.AppDatabase
+import com.akinci.chatter.data.mapper.toDomain
+import com.akinci.chatter.data.room.chatsession.ChatSessionDao
 import com.akinci.chatter.data.room.chatsession.ChatSessionEntity
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class ChatSessionRepository @Inject constructor(
-    private val database: AppDatabase,
+    private val chatSessionDao: ChatSessionDao,
 ) {
-    private val chatSessionDao by lazy { database.getChatSessionDao() }
-
-    suspend fun createChatSession(membersIds: List<Long>) = runCatching {
-        chatSessionDao.create(
-            ChatSessionEntity(membersIds = ",${membersIds.joinToString(separator = ",")},")
-        )
+    fun get(memberId: Long) = chatSessionDao.get(memberId).map { sessions ->
+        sessions.map { it.toDomain() }
     }
 
-    fun getChatSessions(memberId: Long) = chatSessionDao.getSessions(memberId)
+    suspend fun create(primaryUserId: Long, secondaryUserId: Long) = runCatching {
+        chatSessionDao.create(
+            ChatSessionEntity(primaryUserId = primaryUserId, secondaryUserId = secondaryUserId)
+        )
+    }
 }
