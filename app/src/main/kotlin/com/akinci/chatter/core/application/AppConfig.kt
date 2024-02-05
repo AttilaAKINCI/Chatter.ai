@@ -10,4 +10,5 @@ class AppConfig @Inject constructor() {
     fun isDebugMode() = BuildConfig.DEBUG
 
     fun getServiceEndpointBaseUrl() = BuildConfig.SERVICE_ENDPOINT_BASE_URL
+    fun getGeminiAPIKey() = BuildConfig.GEMINI_API_KEY
 }

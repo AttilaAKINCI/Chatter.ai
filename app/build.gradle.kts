@@ -92,6 +92,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.kotlinx.serialization.json)
 
+    // GEMINI - AI
+    implementation(libs.generativeai)
+
     // COIL
     implementation(libs.coil.compose)
 

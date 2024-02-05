@@ -1,5 +1,6 @@
 package com.akinci.chatter.domain
 
+import com.akinci.chatter.core.ai.GeminiAI
 import com.akinci.chatter.data.repository.MessageRepository
 import com.akinci.chatter.domain.data.ChatSession
 import com.akinci.chatter.domain.data.MessageItem
@@ -24,6 +25,7 @@ import kotlin.random.Random
 class ChatSimulator @Inject constructor(
     private val messageRepository: MessageRepository,
     private val getMessageStreamUseCase: GetMessageStreamUseCase,
+    private val geminiAI: GeminiAI,
 ) {
     private val coroutineScope by lazy { CoroutineScope(Job() + Dispatchers.Main) }
     private var replyGeneratorJob: Job? = null
@@ -53,7 +55,7 @@ class ChatSimulator @Inject constructor(
                 if (outBoundCount > inBoundCount) {
                     // Chat mate haven't responded some of loggedInUser's messages.
                     // in order to simulate chat mate's responses, type indicator should be added.
-                    simulateChatMateResponse()
+                    simulateChatMateResponse(question = getQuestion(newMessages, inBoundCount))
                 }
 
                 _messageFlow.value =
@@ -71,7 +73,7 @@ class ChatSimulator @Inject constructor(
             }.launchIn(coroutineScope)
     }
 
-    private fun simulateChatMateResponse() {
+    private fun simulateChatMateResponse(question: String) {
         // skip reply request because 1 response is already in progress
         if (replyGeneratorJob?.isCompleted == false) return
         // chat session should be received to simulate response action
@@ -92,12 +94,14 @@ class ChatSimulator @Inject constructor(
             // keep ui in typing state for a while
             delay(Random.nextLong(500L, 2000L))
 
-            // send chat mate's response
-            // TODO add Gemini AI for chat response texts.
+            // send question to gemini ai model and send response as chat mate's response
+            val response = geminiAI.ask(question = question).getOrNull()
+                ?: "Answer for '$question' -> ${Random.nextInt(1, 100)}"
+
             send(
                 chatSessionId = chatSession!!.sessionId,
                 ownerUserId = chatSession!!.chatMate.id,
-                text = "Generated Random Text: ${Random.nextInt(1, 100)}",
+                text = response,
             )
         }
     }
@@ -107,4 +111,8 @@ class ChatSimulator @Inject constructor(
 
     private fun isIndicatorActive() =
         messageFlow.value.firstOrNull { it is MessageItem.TypeIndicatorItem } != null
+
+    private fun getQuestion(messages: List<MessageItem>, index: Int): String {
+        return messages.filterIsInstance<MessageItem.OutboundMessageItem>().reversed()[index].text
+    }
 }
