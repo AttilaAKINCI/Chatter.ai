@@ -9,7 +9,7 @@ import javax.inject.Inject
 class ChatSessionRepository @Inject constructor(
     private val chatSessionDao: ChatSessionDao,
 ) {
-    fun get(memberId: Long) = chatSessionDao.get(memberId).map { sessions ->
+    fun getChatSessionStream(memberId: Long) = chatSessionDao.getStream(memberId).map { sessions ->
         sessions.map { it.toDomain() }
     }
 

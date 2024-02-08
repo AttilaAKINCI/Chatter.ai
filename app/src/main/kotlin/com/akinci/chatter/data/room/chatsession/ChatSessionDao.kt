@@ -14,5 +14,5 @@ interface ChatSessionDao {
 
     @Transaction
     @Query("SELECT * FROM db_table_chat_sessions WHERE primaryUserId = :primaryUserId ORDER BY id DESC")
-    fun get(primaryUserId: Long): Flow<List<ChatSessionWithUser>>
+    fun getStream(primaryUserId: Long): Flow<List<ChatSessionWithUser>>
 }

@@ -65,7 +65,7 @@ class DashboardViewModel @Inject constructor(
     }
 
     private fun subscribeToChatSessionUpdates(loggedInUserId: Long) {
-        chatSessionRepository.get(memberId = loggedInUserId)
+        chatSessionRepository.getChatSessionStream(memberId = loggedInUserId)
             .onEach { sessions ->
                 if (sessions.isNotEmpty()) {
                     _stateFlow.reduce {
