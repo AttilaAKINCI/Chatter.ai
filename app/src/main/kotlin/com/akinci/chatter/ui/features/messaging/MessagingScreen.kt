@@ -24,10 +24,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -51,10 +51,10 @@ import com.akinci.chatter.core.compose.UIModePreviews
 import com.akinci.chatter.domain.data.ChatSession
 import com.akinci.chatter.domain.data.MessageItem
 import com.akinci.chatter.domain.data.User
+import com.akinci.chatter.ui.ds.components.BubbleMessage
 import com.akinci.chatter.ui.ds.components.CachedImage
 import com.akinci.chatter.ui.ds.components.IconButton
 import com.akinci.chatter.ui.ds.components.TiledBackground
-import com.akinci.chatter.ui.ds.components.BubbleMessage
 import com.akinci.chatter.ui.ds.theme.ChatterTheme
 import com.akinci.chatter.ui.ds.theme.oval
 import com.akinci.chatter.ui.features.messaging.MessagingViewContract.ScreenArgs
@@ -160,12 +160,12 @@ private fun MessagingScreen.TopBar(
         navigationIcon = {
             IconButton(
                 modifier = Modifier.padding(horizontal = 8.dp),
-                painter = rememberVectorPainter(image = Icons.Rounded.ArrowBack),
+                painter = rememberVectorPainter(image = Icons.AutoMirrored.Rounded.ArrowBack),
                 onClick = onBackClick
             )
         }
     )
-    Divider()
+    HorizontalDivider()
 }
 
 @Composable
@@ -179,7 +179,7 @@ private fun MessagingScreen.Footer(
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.surface)
     ) {
-        Divider()
+        HorizontalDivider()
         Row(
             modifier = Modifier.padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically

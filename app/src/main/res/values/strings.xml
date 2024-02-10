@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Chatter</string>
+    <string name="app_name">Chatter AI</string>
 
     <string name="login_screen_name_title">Name</string>
     <string name="login_screen_name_hint">Name field is used for both login and register. It can not be blank.</string>
