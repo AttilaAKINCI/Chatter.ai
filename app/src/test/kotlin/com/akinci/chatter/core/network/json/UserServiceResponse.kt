@@ -1,7 +1,19 @@
 package com.akinci.chatter.core.network.json
 
 object UserServiceResponse {
-    val rawResponse = """
+    const val EMPTY_RESPONSE = """
+        {
+            "results": [],
+            "info": {
+                "seed": "3d45d3bd5bf8392b",
+                "results": 0,
+                "page": 1,
+                "version": "1.4"
+            }
+        }
+    """
+
+    const val RAW_RESPONSE = """
         {
             "results": [
                 {

@@ -22,16 +22,11 @@ class UserRepository @Inject constructor(
 
     suspend fun get(name: String) = runCatching {
         userDao.get(name) ?: throw UserNotFound()
+    }.map {
+        it.toDomain()
     }.onFailure {
         Timber.e(it, "User couldn't acquired from ROOM db by name")
     }
-
-    suspend fun get(id: Long) = runCatching {
-        userDao.get(id) ?: throw UserNotFound()
-    }.onFailure {
-        Timber.e(it, "User couldn't acquired from ROOM db by id")
-    }
-
     // endregion
 
     // region REMOTE

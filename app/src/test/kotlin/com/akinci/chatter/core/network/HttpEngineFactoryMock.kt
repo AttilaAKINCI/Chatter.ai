@@ -17,11 +17,9 @@ class HttpEngineFactoryMock : HttpEngineFactory() {
 
     override fun create(): MockEngine {
         return MockEngine { request ->
-            if (simulateException) throw Throwable("Simulated Network Exception")
-
             val path = request.url.encodedPath
             val content = when {
-                path == "api/" -> getRandomUser(statusCode)
+                path == "/api/" -> getRandomUser(statusCode, simulateException)
                 else -> throw IllegalStateException("Unsupported path")
             }
 
@@ -33,9 +31,19 @@ class HttpEngineFactoryMock : HttpEngineFactory() {
         }
     }
 
-    private fun getRandomUser(statusCode: HttpStatusCode): ByteArray {
+    private fun getRandomUser(
+        statusCode: HttpStatusCode,
+        simulateUserFetchError: Boolean,
+    ): ByteArray {
         return when (statusCode) {
-            OK -> UserServiceResponse.rawResponse.toByteArray(Charset.defaultCharset())
+            OK -> {
+                if (simulateUserFetchError) {
+                    UserServiceResponse.EMPTY_RESPONSE.toByteArray(Charset.defaultCharset())
+                } else {
+                    UserServiceResponse.RAW_RESPONSE.toByteArray(Charset.defaultCharset())
+                }
+            }
+
             else -> throw Throwable(statusCode.description)
         }
     }

@@ -13,6 +13,6 @@ class GetPrimaryUserUseCase @Inject constructor(
 ) {
     suspend fun execute(): Result<User> {
         val name = dataStorage.getLoggedInUsersName() ?: return Result.failure(UserNotFound())
-        return userRepository.get(name).map { it.toDomain() }
+        return userRepository.get(name)
     }
 }
