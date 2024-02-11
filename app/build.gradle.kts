@@ -22,7 +22,7 @@ android {
         versionCode = 1
         versionName = "1.0.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.akinci.chatter.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -165,6 +165,8 @@ dependencies {
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.test.rules)
     androidTestImplementation(libs.arch.core.testing)
+    androidTestImplementation(libs.kotest.assertions.core)
+    androidTestImplementation(libs.turbine)
 
     // COMPOSE
     androidTestImplementation(platform(libs.compose.bom))
