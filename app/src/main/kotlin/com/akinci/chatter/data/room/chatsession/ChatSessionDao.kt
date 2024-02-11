@@ -13,6 +13,6 @@ interface ChatSessionDao {
     suspend fun create(chatWindow: ChatSessionEntity)
 
     @Transaction
-    @Query("SELECT * FROM db_table_chat_sessions WHERE primaryUserId = :primaryUserId ORDER BY id DESC")
-    fun getStream(primaryUserId: Long): Flow<List<ChatSessionWithUser>>
+    @Query("SELECT * FROM db_table_chat_sessions WHERE primaryUserId =:sessionMemberId OR secondaryUserId =:sessionMemberId ORDER BY id DESC")
+    fun getStream(sessionMemberId: Long): Flow<List<ChatSessionWithUser>>
 }
