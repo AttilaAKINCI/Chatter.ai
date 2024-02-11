@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Chatter"
+rootProject.name = "ChatterAI"
 include(":app")

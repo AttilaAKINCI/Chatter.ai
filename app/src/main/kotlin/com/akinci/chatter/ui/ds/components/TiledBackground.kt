@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 
 /**
@@ -30,7 +31,7 @@ fun TiledBackground(
     content: @Composable BoxScope.() -> Unit
 ) {
     val context = LocalContext.current
-    val image = context.getDrawable(patternId)
+    val image = ContextCompat.getDrawable(context, patternId)
         ?.toBitmap()
         ?.asImageBitmap()
 
