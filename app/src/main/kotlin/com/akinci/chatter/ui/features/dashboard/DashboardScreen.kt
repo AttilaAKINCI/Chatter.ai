@@ -1,5 +1,6 @@
 package com.akinci.chatter.ui.features.dashboard
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -43,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -51,17 +53,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.akinci.chatter.R
 import com.akinci.chatter.core.compose.UIModePreviews
+import com.akinci.chatter.core.mvi.CollectEffect
 import com.akinci.chatter.domain.data.ChatSession
 import com.akinci.chatter.ui.ds.components.CachedImage
 import com.akinci.chatter.ui.ds.components.Dialog
 import com.akinci.chatter.ui.ds.components.LoadingButton
-import com.akinci.chatter.ui.ds.components.snackbar.SnackBarContainer
 import com.akinci.chatter.ui.ds.theme.ChatterTheme
 import com.akinci.chatter.ui.ds.theme.DarkYellow
 import com.akinci.chatter.ui.ds.theme.bodyLarge_swash
 import com.akinci.chatter.ui.ds.theme.oval
 import com.akinci.chatter.ui.features.NavGraphs
+import com.akinci.chatter.ui.features.dashboard.DashboardViewContract.Action
+import com.akinci.chatter.ui.features.dashboard.DashboardViewContract.Effect
 import com.akinci.chatter.ui.features.dashboard.DashboardViewContract.State
+import com.akinci.chatter.ui.features.dashboard.DashboardViewContract.StateType
 import com.akinci.chatter.ui.features.destinations.MessagingScreenDestination
 import com.akinci.chatter.ui.features.destinations.SplashScreenDestination
 import com.akinci.chatter.ui.navigation.animation.FadeInOutAnimation
@@ -76,27 +81,33 @@ fun DashboardScreen(
     navigator: DestinationsNavigator,
     vm: DashboardViewModel = hiltViewModel()
 ) {
-    val uiState: State by vm.stateFlow.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val uiState: State by vm.state.collectAsStateWithLifecycle()
 
-    if (uiState.logoutUser) {
-        navigator.navigate(SplashScreenDestination) {
-            popUpTo(NavGraphs.root) { inclusive = true }
+    CollectEffect(effect = vm.effect) { effect ->
+        when (effect) {
+            Effect.LogoutUser -> navigator.navigate(SplashScreenDestination) {
+                popUpTo(NavGraphs.root) { inclusive = true }
+            }
+
+            is Effect.ShowToastMessage -> {
+                Toast.makeText(
+                    context,
+                    context.resources.getString(effect.messageId),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
-    // we need to disable back button actions for this screen.
-    BackHandler(enabled = true) {
-        // consume back action.
-    }
+    // we need to disable back button actions for this screen, consume back action.
+    BackHandler(enabled = true) {}
 
     DashboardScreenContent(
         uiState = uiState,
-        onLogoutClick = { vm.showLogoutDialog() },
-        onNewChatMateButtonClick = { vm.findNewChatMate() },
-        onChatSessionClick = { session ->
-            navigator.navigate(
-                MessagingScreenDestination(session = session)
-            )
+        onAction = vm::onAction,
+        onRowClick = {
+            navigator.navigate(MessagingScreenDestination(session = it))
         }
     )
 
@@ -115,54 +126,48 @@ fun DashboardScreen(
 @Composable
 private fun DashboardScreenContent(
     uiState: State,
-    onLogoutClick: () -> Unit,
-    onNewChatMateButtonClick: () -> Unit,
-    onChatSessionClick: (ChatSession) -> Unit,
+    onAction: (Action) -> Unit,
+    onRowClick: (ChatSession) -> Unit,
 ) {
     Surface {
-        SnackBarContainer(
+        Column(
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets.navigationBars)
                 .fillMaxSize(),
-            snackBarState = uiState.snackBarState,
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                DashboardScreen.TopBar(
-                    name = uiState.loggedInUser?.name.orEmpty(),
-                    onLogoutClick = onLogoutClick,
+            DashboardScreen.TopBar(
+                name = uiState.loggedInUser?.name.orEmpty(),
+                onLogoutClick = { onAction(Action.OnLogoutButtonClick) },
+            )
+
+            when (uiState.stateType) {
+                StateType.ERROR -> DashboardScreen.Info(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(id = R.string.dashboard_screen_error),
+                    image = painterResource(id = R.drawable.ic_error_128dp),
+                    tint = MaterialTheme.colorScheme.onSurface,
                 )
 
-                when {
-                    uiState.error -> DashboardScreen.Info(
-                        modifier = Modifier.weight(1f),
-                        text = stringResource(id = R.string.dashboard_screen_error),
-                        image = painterResource(id = R.drawable.ic_error_128dp),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                    )
+                StateType.NO_DATA -> DashboardScreen.Info(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(id = R.string.dashboard_screen_no_data),
+                    image = painterResource(id = R.drawable.ic_no_data_128dp),
+                    tint = Color.DarkYellow,
+                )
 
-                    uiState.noData -> DashboardScreen.Info(
-                        modifier = Modifier.weight(1f),
-                        text = stringResource(id = R.string.dashboard_screen_no_data),
-                        image = painterResource(id = R.drawable.ic_no_data_128dp),
-                        tint = Color.DarkYellow,
-                    )
+                StateType.LOADING -> DashboardScreen.Loading(modifier = Modifier.weight(1f))
 
-                    uiState.loading -> DashboardScreen.Loading(modifier = Modifier.weight(1f))
-
-                    else -> DashboardScreen.Content(
-                        modifier = Modifier.weight(1f),
-                        sessions = uiState.chatSessions,
-                        onClick = onChatSessionClick,
-                    )
-                }
-
-                DashboardScreen.Footer(
-                    isLoading = uiState.isNewChatButtonLoading,
-                    onNewChatMateButtonClick = onNewChatMateButtonClick,
+                StateType.CONTENT -> DashboardScreen.Content(
+                    modifier = Modifier.weight(1f),
+                    sessions = uiState.chatSessions,
+                    onClick = onRowClick,
                 )
             }
+
+            DashboardScreen.Footer(
+                isLoading = uiState.isNewChatButtonLoading,
+                onNewChatMateButtonClick = { onAction(Action.OnNewChatMateButtonClick) },
+            )
         }
     }
 }
@@ -328,9 +333,8 @@ private fun DashboardScreenPreview() {
     ChatterTheme {
         DashboardScreenContent(
             uiState = State(),
-            onLogoutClick = {},
-            onNewChatMateButtonClick = {},
-            onChatSessionClick = {},
+            onAction = {},
+            onRowClick = {},
         )
     }
 }

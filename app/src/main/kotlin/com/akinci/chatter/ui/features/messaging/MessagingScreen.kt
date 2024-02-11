@@ -57,6 +57,7 @@ import com.akinci.chatter.ui.ds.components.IconButton
 import com.akinci.chatter.ui.ds.components.TiledBackground
 import com.akinci.chatter.ui.ds.theme.ChatterTheme
 import com.akinci.chatter.ui.ds.theme.oval
+import com.akinci.chatter.ui.features.messaging.MessagingViewContract.Action
 import com.akinci.chatter.ui.features.messaging.MessagingViewContract.ScreenArgs
 import com.akinci.chatter.ui.features.messaging.MessagingViewContract.State
 import com.akinci.chatter.ui.navigation.animation.SlideHorizontallyAnimation
@@ -74,12 +75,11 @@ fun MessagingScreen(
     navigator: DestinationsNavigator,
     vm: MessagingViewModel = hiltViewModel(),
 ) {
-    val uiState: State by vm.stateFlow.collectAsStateWithLifecycle()
+    val uiState: State by vm.state.collectAsStateWithLifecycle()
 
     MessagingScreenContent(
         uiState = uiState,
-        onTextChanged = { vm.onTextChanged(it) },
-        onSendButtonClick = { vm.onSendButtonClick() },
+        onAction = vm::onAction,
         onBackClick = { navigator.navigateUp() },
     )
 }
@@ -87,8 +87,7 @@ fun MessagingScreen(
 @Composable
 private fun MessagingScreenContent(
     uiState: State,
-    onTextChanged: (String) -> Unit,
-    onSendButtonClick: () -> Unit,
+    onAction: (Action) -> Unit,
     onBackClick: () -> Unit,
 ) {
     Surface {
@@ -104,8 +103,8 @@ private fun MessagingScreenContent(
                     .imePadding()
             ) {
                 MessagingScreen.TopBar(
-                    name = uiState.session.chatMate.name,
-                    imageUrl = uiState.session.chatMate.imageUrl,
+                    name = uiState.session?.chatMate?.name.orEmpty(),
+                    imageUrl = uiState.session?.chatMate?.imageUrl.orEmpty(),
                     onBackClick = onBackClick,
                 )
 
@@ -116,8 +115,8 @@ private fun MessagingScreenContent(
 
                 MessagingScreen.Footer(
                     text = uiState.text,
-                    onTextChanged = onTextChanged,
-                    onSendButtonClick = onSendButtonClick,
+                    onTextChanged = { onAction(Action.OnTextChange(it)) },
+                    onSendButtonClick = { onAction(Action.OnSendButtonClick) },
                 )
             }
         }
@@ -283,8 +282,7 @@ private fun MessagingScreenPreview() {
                     ),
                 ),
             ),
-            onTextChanged = {},
-            onSendButtonClick = {},
+            onAction = {},
             onBackClick = {},
         )
     }

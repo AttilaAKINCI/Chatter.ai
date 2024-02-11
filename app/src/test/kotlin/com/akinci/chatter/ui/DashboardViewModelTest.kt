@@ -11,7 +11,7 @@ import com.akinci.chatter.data.repository.UserRepository
 import com.akinci.chatter.domain.GetPrimaryUserUseCase
 import com.akinci.chatter.domain.data.ChatSession
 import com.akinci.chatter.domain.data.User
-import com.akinci.chatter.ui.ds.components.snackbar.SnackBarState
+import com.akinci.chatter.ui.features.dashboard.DashboardViewContract
 import com.akinci.chatter.ui.features.dashboard.DashboardViewModel
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import kotlin.time.Duration
 
 @ExtendWith(MainDispatcherRule::class)
 class DashboardViewModelTest {
@@ -43,12 +42,10 @@ class DashboardViewModelTest {
 
         buildViewModel()
 
-        testedClass.stateFlow.test {
+        testedClass.state.test {
             with(awaitItem()) {
                 chatSessions shouldBe persistentListOf()
-                loading shouldBe false
-                noData shouldBe false
-                error shouldBe true
+                stateType shouldBe DashboardViewContract.StateType.ERROR
             }
             ensureAllEventsConsumed()
         }
@@ -63,7 +60,7 @@ class DashboardViewModelTest {
 
         buildViewModel()
 
-        testedClass.stateFlow.test(timeout = Duration.INFINITE) {
+        testedClass.state.test {
 
             // check logged in user save
             with(awaitItem()) {
@@ -73,9 +70,7 @@ class DashboardViewModelTest {
             // check messages
             with(awaitItem()) {
                 chatSessions shouldBe sessions.toPersistentList()
-                loading shouldBe false
-                noData shouldBe false
-                error shouldBe false
+                stateType shouldBe DashboardViewContract.StateType.CONTENT
             }
 
             ensureAllEventsConsumed()
@@ -92,7 +87,7 @@ class DashboardViewModelTest {
 
             buildViewModel()
 
-            testedClass.stateFlow.test(timeout = Duration.INFINITE) {
+            testedClass.state.test {
 
                 // check logged in user save
                 with(awaitItem()) {
@@ -102,15 +97,12 @@ class DashboardViewModelTest {
                 // check messages
                 with(awaitItem()) {
                     chatSessions shouldBe persistentListOf()
-                    loading shouldBe false
-                    noData shouldBe true
-                    error shouldBe false
+                    stateType shouldBe DashboardViewContract.StateType.NO_DATA
                 }
 
                 ensureAllEventsConsumed()
             }
         }
-
 
     @Test
     fun `should logout when logout button clicked`() = runTest {
@@ -124,22 +116,21 @@ class DashboardViewModelTest {
 
         testedClass.logout()
 
-        testedClass.stateFlow.test(timeout = Duration.INFINITE) {
-
+        testedClass.state.test {
             // hide dialog first
             with(awaitItem()) {
                 isLogoutDialogVisible shouldBe false
             }
 
-            // hide dialog first
-            with(awaitItem()) {
-                logoutUser shouldBe true
-            }
-
-            coVerify(exactly = 1) { dataStorageMock.setLoggedInUsersName("") }
-
             ensureAllEventsConsumed()
         }
+
+        testedClass.effect.test {
+            assert(awaitItem() is DashboardViewContract.Effect.LogoutUser)
+            ensureAllEventsConsumed()
+        }
+
+        coVerify(exactly = 1) { dataStorageMock.setLoggedInUsersName("") }
     }
 
     @Test
@@ -153,7 +144,7 @@ class DashboardViewModelTest {
 
         testedClass.showLogoutDialog()
 
-        testedClass.stateFlow.test {
+        testedClass.state.test {
             with(awaitItem()) {
                 isLogoutDialogVisible shouldBe true
             }
@@ -161,7 +152,6 @@ class DashboardViewModelTest {
             ensureAllEventsConsumed()
         }
     }
-
 
     @Test
     fun `should return unit when logged in user is not found`() = runTest {
@@ -188,23 +178,14 @@ class DashboardViewModelTest {
 
         testedClass.findNewChatMate()
 
-        testedClass.stateFlow.test(timeout = Duration.INFINITE) {
-            // initial
-            with(awaitItem()){
-                assert(snackBarState is SnackBarState)
-            }
-
-            // clear message state
-            with(awaitItem()){
-                snackBarState shouldBe null
-            }
-
-            coVerify(exactly = 1) { userRepositoryMock.generateRandomUser() }
-            coVerify(exactly = 0) { chatSessionRepositoryMock.create(any(), any()) }
-            coVerify(exactly = 0) { userRepositoryMock.create(any()) }
-
+        testedClass.effect.test {
+            assert(awaitItem() is DashboardViewContract.Effect.ShowToastMessage)
             ensureAllEventsConsumed()
         }
+
+        coVerify(exactly = 1) { userRepositoryMock.generateRandomUser() }
+        coVerify(exactly = 0) { chatSessionRepositoryMock.create(any(), any()) }
+        coVerify(exactly = 0) { userRepositoryMock.create(any()) }
     }
 
     @Test
@@ -221,23 +202,14 @@ class DashboardViewModelTest {
 
         testedClass.findNewChatMate()
 
-        testedClass.stateFlow.test(timeout = Duration.INFINITE) {
-            // initial
-            with(awaitItem()){
-                assert(snackBarState is SnackBarState)
-            }
-
-            // clear message state
-            with(awaitItem()){
-                snackBarState shouldBe null
-            }
-
-            coVerify(exactly = 1) { userRepositoryMock.generateRandomUser() }
-            coVerify(exactly = 1) { userRepositoryMock.create(generatedUser) }
-            coVerify(exactly = 0) { chatSessionRepositoryMock.create(any(), any()) }
-
+        testedClass.effect.test {
+            assert(awaitItem() is DashboardViewContract.Effect.ShowToastMessage)
             ensureAllEventsConsumed()
         }
+
+        coVerify(exactly = 1) { userRepositoryMock.generateRandomUser() }
+        coVerify(exactly = 1) { userRepositoryMock.create(generatedUser) }
+        coVerify(exactly = 0) { chatSessionRepositoryMock.create(any(), any()) }
     }
 
     @Test
@@ -262,29 +234,20 @@ class DashboardViewModelTest {
 
         testedClass.findNewChatMate()
 
-        testedClass.stateFlow.test(timeout = Duration.INFINITE) {
-            // initial
-            with(awaitItem()){
-                assert(snackBarState is SnackBarState)
-            }
-
-            // clear message state
-            with(awaitItem()){
-                snackBarState shouldBe null
-            }
-
-            coVerify(exactly = 1) { userRepositoryMock.generateRandomUser() }
-            coVerify(exactly = 1) { userRepositoryMock.create(generatedUser) }
-            coVerify(exactly = 1) {
-                chatSessionRepositoryMock.create(user.id, expectedGeneratedUser.id)
-            }
-
+        testedClass.effect.test {
+            assert(awaitItem() is DashboardViewContract.Effect.ShowToastMessage)
             ensureAllEventsConsumed()
+        }
+
+        coVerify(exactly = 1) { userRepositoryMock.generateRandomUser() }
+        coVerify(exactly = 1) { userRepositoryMock.create(generatedUser) }
+        coVerify(exactly = 1) {
+            chatSessionRepositoryMock.create(user.id, expectedGeneratedUser.id)
         }
     }
 
     @Test
-    fun `should return snack b`() = runTest {
+    fun `should add new chat mate when generation is successful`() = runTest {
         val user = getUser()
         val generatedUser = getGeneratedUser()
         coEvery { getPrimaryUserUseCaseMock.execute() } returns Result.success(user)
@@ -305,24 +268,15 @@ class DashboardViewModelTest {
 
         testedClass.findNewChatMate()
 
-        testedClass.stateFlow.test(timeout = Duration.INFINITE) {
-            // initial
-            with(awaitItem()){
-                assert(snackBarState is SnackBarState)
-            }
-
-            // clear message state
-            with(awaitItem()){
-                snackBarState shouldBe null
-            }
-
-            coVerify(exactly = 1) { userRepositoryMock.generateRandomUser() }
-            coVerify(exactly = 1) { userRepositoryMock.create(generatedUser) }
-            coVerify(exactly = 1) {
-                chatSessionRepositoryMock.create(user.id, expectedGeneratedUser.id)
-            }
-
+        testedClass.effect.test {
+            assert(awaitItem() is DashboardViewContract.Effect.ShowToastMessage)
             ensureAllEventsConsumed()
+        }
+
+        coVerify(exactly = 1) { userRepositoryMock.generateRandomUser() }
+        coVerify(exactly = 1) { userRepositoryMock.create(generatedUser) }
+        coVerify(exactly = 1) {
+            chatSessionRepositoryMock.create(user.id, expectedGeneratedUser.id)
         }
     }
 

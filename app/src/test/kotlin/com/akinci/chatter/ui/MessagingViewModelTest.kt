@@ -41,12 +41,11 @@ class MessagingViewModelTest {
 
         buildViewModel()
 
-        testedClass.stateFlow.test {
+        testedClass.state.test {
             with(awaitItem()) {
                 loggedInUser shouldBe user
                 messages shouldBe messageItems
             }
-
             ensureAllEventsConsumed()
         }
     }
@@ -61,7 +60,7 @@ class MessagingViewModelTest {
 
         testedClass.onTextChanged("New Typed message")
 
-        testedClass.stateFlow.test {
+        testedClass.state.test {
             with(awaitItem()) {
                 text shouldBe "New Typed message"
             }
@@ -79,20 +78,19 @@ class MessagingViewModelTest {
         testedClass.onTextChanged("New Typed message")
         testedClass.onSendButtonClick()
 
-        testedClass.stateFlow.test {
+        testedClass.state.test {
             with(awaitItem()) {
                 text shouldBe ""
             }
-
-            coVerify(exactly = 1) {
-                chatSimulatorMock.send(
-                    chatSessionId = 100L,
-                    ownerUserId = 101L,
-                    text = "New Typed message",
-                )
-            }
-
             ensureAllEventsConsumed()
+        }
+
+        coVerify(exactly = 1) {
+            chatSimulatorMock.send(
+                chatSessionId = 100L,
+                ownerUserId = 101L,
+                text = "New Typed message",
+            )
         }
     }
 
