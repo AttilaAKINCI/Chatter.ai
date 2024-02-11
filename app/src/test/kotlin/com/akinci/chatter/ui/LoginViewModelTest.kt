@@ -7,7 +7,7 @@ import com.akinci.chatter.data.datastore.DataStorage
 import com.akinci.chatter.data.exception.UserNotFound
 import com.akinci.chatter.data.repository.UserRepository
 import com.akinci.chatter.domain.data.User
-import com.akinci.chatter.ui.ds.components.snackbar.SnackBarState
+import com.akinci.chatter.ui.features.login.LoginViewContract
 import com.akinci.chatter.ui.features.login.LoginViewModel
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
@@ -17,7 +17,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import kotlin.time.Duration
 
 @ExtendWith(MainDispatcherRule::class)
 class LoginViewModelTest {
@@ -43,12 +42,11 @@ class LoginViewModelTest {
 
         testedClass.updateName(newName)
 
-        testedClass.stateFlow.test {
-            val state = awaitItem()
-
-            state.name shouldBe newName
-            state.validationError shouldBe false
-
+        testedClass.state.test {
+            with(awaitItem()) {
+                name shouldBe newName
+                validationError shouldBe false
+            }
             ensureAllEventsConsumed()
         }
     }
@@ -60,18 +58,17 @@ class LoginViewModelTest {
         val result = testedClass.tryToLogin()
         result shouldBe Unit
 
-        testedClass.stateFlow.test {
-            val state = awaitItem()
-
-            state.validationError shouldBe true
-            state.isLoginButtonLoading shouldBe false
-            state.isRegisterButtonLoading shouldBe false
-
-            coVerify(exactly = 0) { dataStorageMock.setLoggedInUsersName(any()) }
-            coVerify(exactly = 0) { userRepositoryMock.get(any()) }
-
+        testedClass.state.test {
+            with(awaitItem()) {
+                validationError shouldBe true
+                isLoginButtonLoading shouldBe false
+                isRegisterButtonLoading shouldBe false
+            }
             ensureAllEventsConsumed()
         }
+
+        coVerify(exactly = 0) { dataStorageMock.setLoggedInUsersName(any()) }
+        coVerify(exactly = 0) { userRepositoryMock.get(any()) }
     }
 
     @Test
@@ -82,25 +79,22 @@ class LoginViewModelTest {
 
         testedClass.tryToLogin()
 
-        testedClass.stateFlow.test(timeout = Duration.INFINITE) {
+        testedClass.state.test {
             // switch to loading mode first
             with(awaitItem()) {
                 validationError shouldBe false
                 isLoginButtonLoading shouldBe true
             }
-
-            // after log in status
-            with(awaitItem()) {
-                navigateToDashboard shouldBe true
-                isLoginButtonLoading shouldBe false
-                isRegisterButtonLoading shouldBe false
-            }
-
-            coVerify(exactly = 1) { dataStorageMock.setLoggedInUsersName(user.name) }
-            coVerify(exactly = 1) { userRepositoryMock.get(user.name) }
-
             ensureAllEventsConsumed()
         }
+
+        testedClass.effect.test {
+            assert(awaitItem() is LoginViewContract.Effect.NavigateToDashboard)
+            ensureAllEventsConsumed()
+        }
+
+        coVerify(exactly = 1) { dataStorageMock.setLoggedInUsersName(user.name) }
+        coVerify(exactly = 1) { userRepositoryMock.get(user.name) }
     }
 
     @Test
@@ -111,7 +105,7 @@ class LoginViewModelTest {
 
         testedClass.tryToLogin()
 
-        testedClass.stateFlow.test(timeout = Duration.INFINITE) {
+        testedClass.state.test {
             // switch to loading mode first
             with(awaitItem()) {
                 validationError shouldBe false
@@ -120,16 +114,20 @@ class LoginViewModelTest {
 
             // after log in status
             with(awaitItem()) {
-                assert(snackBarState is SnackBarState)
                 isLoginButtonLoading shouldBe false
                 isRegisterButtonLoading shouldBe false
             }
 
-            coVerify(exactly = 1) { userRepositoryMock.get(userName) }
-            coVerify(exactly = 0) { dataStorageMock.setLoggedInUsersName(userName) }
-
             ensureAllEventsConsumed()
         }
+
+        testedClass.effect.test {
+            assert(awaitItem() is LoginViewContract.Effect.ShowToastMessage)
+            ensureAllEventsConsumed()
+        }
+
+        coVerify(exactly = 1) { userRepositoryMock.get(userName) }
+        coVerify(exactly = 0) { dataStorageMock.setLoggedInUsersName(userName) }
     }
 
     @Test
@@ -139,18 +137,18 @@ class LoginViewModelTest {
         val result = testedClass.tryToRegister()
         result shouldBe Unit
 
-        testedClass.stateFlow.test {
-            val state = awaitItem()
-
-            state.validationError shouldBe true
-            state.isLoginButtonLoading shouldBe false
-            state.isRegisterButtonLoading shouldBe false
-
-            coVerify(exactly = 0) { dataStorageMock.setLoggedInUsersName(any()) }
-            coVerify(exactly = 0) { userRepositoryMock.get(any()) }
+        testedClass.state.test {
+            with(awaitItem()) {
+                validationError shouldBe true
+                isLoginButtonLoading shouldBe false
+                isRegisterButtonLoading shouldBe false
+            }
 
             ensureAllEventsConsumed()
         }
+
+        coVerify(exactly = 0) { dataStorageMock.setLoggedInUsersName(any()) }
+        coVerify(exactly = 0) { userRepositoryMock.get(any()) }
     }
 
     @Test
@@ -161,7 +159,7 @@ class LoginViewModelTest {
 
         testedClass.tryToRegister()
 
-        testedClass.stateFlow.test(timeout = Duration.INFINITE) {
+        testedClass.state.test {
             // switch to loading mode first
             with(awaitItem()) {
                 validationError shouldBe false
@@ -169,18 +167,22 @@ class LoginViewModelTest {
             }
 
             with(awaitItem()) {
-                assert(snackBarState is SnackBarState)
                 isLoginButtonLoading shouldBe false
                 isRegisterButtonLoading shouldBe false
             }
 
-            coVerify(exactly = 0) { userRepositoryMock.generateRandomUser() }
-            coVerify(exactly = 0) { userRepositoryMock.create(any()) }
-            coVerify(exactly = 0) { dataStorageMock.setLoggedInUsersName(any()) }
-            coVerify(exactly = 1) { userRepositoryMock.get(user.name) }
-
             ensureAllEventsConsumed()
         }
+
+        testedClass.effect.test {
+            assert(awaitItem() is LoginViewContract.Effect.ShowToastMessage)
+            ensureAllEventsConsumed()
+        }
+
+        coVerify(exactly = 0) { userRepositoryMock.generateRandomUser() }
+        coVerify(exactly = 0) { userRepositoryMock.create(any()) }
+        coVerify(exactly = 0) { dataStorageMock.setLoggedInUsersName(any()) }
+        coVerify(exactly = 1) { userRepositoryMock.get(user.name) }
     }
 
     @Test
@@ -192,7 +194,7 @@ class LoginViewModelTest {
 
         testedClass.tryToRegister()
 
-        testedClass.stateFlow.test(timeout = Duration.INFINITE) {
+        testedClass.state.test {
             // switch to loading mode first
             with(awaitItem()) {
                 validationError shouldBe false
@@ -200,18 +202,22 @@ class LoginViewModelTest {
             }
 
             with(awaitItem()) {
-                assert(snackBarState is SnackBarState)
                 isLoginButtonLoading shouldBe false
                 isRegisterButtonLoading shouldBe false
             }
 
-            coVerify(exactly = 0) { userRepositoryMock.create(any()) }
-            coVerify(exactly = 0) { dataStorageMock.setLoggedInUsersName(any()) }
-            coVerify(exactly = 1) { userRepositoryMock.get(userName) }
-            coVerify(exactly = 1) { userRepositoryMock.generateRandomUser() }
-
             ensureAllEventsConsumed()
         }
+
+        testedClass.effect.test {
+            assert(awaitItem() is LoginViewContract.Effect.ShowToastMessage)
+            ensureAllEventsConsumed()
+        }
+
+        coVerify(exactly = 0) { userRepositoryMock.create(any()) }
+        coVerify(exactly = 0) { dataStorageMock.setLoggedInUsersName(any()) }
+        coVerify(exactly = 1) { userRepositoryMock.get(userName) }
+        coVerify(exactly = 1) { userRepositoryMock.generateRandomUser() }
     }
 
     @Test
@@ -226,7 +232,7 @@ class LoginViewModelTest {
 
         testedClass.tryToRegister()
 
-        testedClass.stateFlow.test(timeout = Duration.INFINITE) {
+        testedClass.state.test {
             // switch to loading mode first
             with(awaitItem()) {
                 validationError shouldBe false
@@ -234,22 +240,26 @@ class LoginViewModelTest {
             }
 
             with(awaitItem()) {
-                assert(snackBarState is SnackBarState)
                 isLoginButtonLoading shouldBe false
                 isRegisterButtonLoading shouldBe false
             }
 
-            coVerify(exactly = 0) { dataStorageMock.setLoggedInUsersName(any()) }
-            coVerify(exactly = 1) { userRepositoryMock.get(userName) }
-            coVerify(exactly = 1) { userRepositoryMock.generateRandomUser() }
-            coVerify(exactly = 1) { userRepositoryMock.create(expectedUser) }
-
             ensureAllEventsConsumed()
         }
+
+        testedClass.effect.test {
+            assert(awaitItem() is LoginViewContract.Effect.ShowToastMessage)
+            ensureAllEventsConsumed()
+        }
+
+        coVerify(exactly = 0) { dataStorageMock.setLoggedInUsersName(any()) }
+        coVerify(exactly = 1) { userRepositoryMock.get(userName) }
+        coVerify(exactly = 1) { userRepositoryMock.generateRandomUser() }
+        coVerify(exactly = 1) { userRepositoryMock.create(expectedUser) }
     }
 
     @Test
-    fun `should return`() = runTest {
+    fun `should login when register is successful`() = runTest {
         val userName = "Attila Akinci"
         val user = getUser()
         testedClass.updateName(userName)
@@ -260,26 +270,25 @@ class LoginViewModelTest {
 
         testedClass.tryToRegister()
 
-        testedClass.stateFlow.test(timeout = Duration.INFINITE) {
+        testedClass.state.test {
             // switch to loading mode first
             with(awaitItem()) {
                 validationError shouldBe false
                 isRegisterButtonLoading shouldBe true
             }
 
-            with(awaitItem()) {
-                navigateToDashboard shouldBe true
-                isLoginButtonLoading shouldBe false
-                isRegisterButtonLoading shouldBe false
-            }
-
-            coVerify(exactly = 1) { userRepositoryMock.get(userName) }
-            coVerify(exactly = 1) { userRepositoryMock.generateRandomUser() }
-            coVerify(exactly = 1) { userRepositoryMock.create(expectedUser) }
-            coVerify(exactly = 1) { dataStorageMock.setLoggedInUsersName(any()) }
-
             ensureAllEventsConsumed()
         }
+
+        testedClass.effect.test {
+            assert(awaitItem() is LoginViewContract.Effect.NavigateToDashboard)
+            ensureAllEventsConsumed()
+        }
+
+        coVerify(exactly = 1) { userRepositoryMock.get(userName) }
+        coVerify(exactly = 1) { userRepositoryMock.generateRandomUser() }
+        coVerify(exactly = 1) { userRepositoryMock.create(expectedUser) }
+        coVerify(exactly = 1) { dataStorageMock.setLoggedInUsersName(any()) }
     }
 
     private fun getUser() = User(

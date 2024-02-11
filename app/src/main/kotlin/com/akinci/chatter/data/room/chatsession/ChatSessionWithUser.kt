@@ -9,8 +9,14 @@ data class ChatSessionWithUser(
     val chatSessionEntity: ChatSessionEntity,
 
     @Relation(
+        parentColumn = "primaryUserId",
+        entityColumn = "id"
+    )
+    val primaryUserEntity: UserEntity,
+
+    @Relation(
         parentColumn = "secondaryUserId",
         entityColumn = "id"
     )
-    val userEntity: UserEntity
+    val secondaryUserEntity: UserEntity
 )

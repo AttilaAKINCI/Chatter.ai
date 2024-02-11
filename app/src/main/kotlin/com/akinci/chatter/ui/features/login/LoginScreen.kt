@@ -1,18 +1,17 @@
 package com.akinci.chatter.ui.features.login
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -26,7 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,13 +33,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.akinci.chatter.R
 import com.akinci.chatter.core.compose.UIModePreviews
+import com.akinci.chatter.core.mvi.CollectEffect
 import com.akinci.chatter.ui.ds.components.InfiniteLottieAnimation
 import com.akinci.chatter.ui.ds.components.LoadingButton
-import com.akinci.chatter.ui.ds.components.snackbar.SnackBarContainer
 import com.akinci.chatter.ui.ds.theme.ChatterTheme
-import com.akinci.chatter.ui.ds.theme.displayLarge_swash
 import com.akinci.chatter.ui.ds.theme.displayMedium_swash
 import com.akinci.chatter.ui.features.destinations.DashboardScreenDestination
+import com.akinci.chatter.ui.features.login.LoginViewContract.Action
+import com.akinci.chatter.ui.features.login.LoginViewContract.Effect
 import com.akinci.chatter.ui.features.login.LoginViewContract.State
 import com.akinci.chatter.ui.navigation.animation.FadeInOutAnimation
 import com.ramcosta.composedestinations.annotation.Destination
@@ -52,61 +52,62 @@ fun LoginScreen(
     navigator: DestinationsNavigator,
     vm: LoginViewModel = hiltViewModel(),
 ) {
-    val uiState: State by vm.stateFlow.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val uiState: State by vm.state.collectAsStateWithLifecycle()
 
-    if (uiState.navigateToDashboard) {
-        navigator.navigate(DashboardScreenDestination)
+    CollectEffect(effect = vm.effect) { effect ->
+        when (effect) {
+            Effect.NavigateToDashboard -> navigator.navigate(DashboardScreenDestination)
+            is Effect.ShowToastMessage -> {
+                Toast.makeText(
+                    context,
+                    context.resources.getString(effect.messageId),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
-    // we need to disable back button actions for this screen.
-    BackHandler(enabled = true) {
-        // consume back action.
-    }
+    // we need to disable back button actions for this screen, consume back action.
+    BackHandler(enabled = true) { }
 
     LoginScreenContent(
         uiState = uiState,
-        onNameChange = { vm.updateName(it) },
-        onLoginButtonClick = { vm.tryToLogin() },
-        onRegisterButtonClick = { vm.tryToRegister() },
+        onAction = vm::onAction,
     )
 }
 
 @Composable
 private fun LoginScreenContent(
     uiState: State,
-    onNameChange: (String) -> Unit,
-    onLoginButtonClick: () -> Unit,
-    onRegisterButtonClick: () -> Unit,
+    onAction: (Action) -> Unit,
 ) {
     Surface {
-        SnackBarContainer(
+        Box(
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets.systemBars)
                 .fillMaxSize(),
-            snackBarState = uiState.snackBarState,
+            contentAlignment = Alignment.Center
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.Center),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(
+                    modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy((-24).dp)
                 ) {
                     InfiniteLottieAnimation(
                         modifier = Modifier
-                            .fillMaxWidth(0.5f)
+                            .fillMaxWidth(0.4f)
                             .aspectRatio(1f),
                         animationId = R.raw.chatter
                     )
                     Text(
                         text = stringResource(id = R.string.app_name),
-                        textAlign = TextAlign.Center,
+                        textAlign = TextAlign.Start,
                         style = MaterialTheme.typography.displayMedium_swash,
                     )
-                    Spacer(modifier = Modifier.width(64.dp))
                 }
 
                 OutlinedTextField(
@@ -114,7 +115,7 @@ private fun LoginScreenContent(
                         .fillMaxWidth()
                         .padding(horizontal = 48.dp),
                     value = uiState.name,
-                    onValueChange = { onNameChange(it) },
+                    onValueChange = { onAction(Action.OnTextChange(it)) },
                     singleLine = true,
                     label = {
                         Text(
@@ -133,7 +134,7 @@ private fun LoginScreenContent(
                     },
                     trailingIcon = {
                         if (uiState.name.isNotBlank()) {
-                            IconButton(onClick = { onNameChange("") }) {
+                            IconButton(onClick = { onAction(Action.OnTextChange("")) }) {
                                 Icon(
                                     imageVector = Icons.Default.Clear,
                                     contentDescription = null,
@@ -153,14 +154,14 @@ private fun LoginScreenContent(
                         modifier = Modifier.weight(1f),
                         title = stringResource(id = R.string.login_screen_login_button_title),
                         isLoading = uiState.isLoginButtonLoading,
-                        onClick = onLoginButtonClick
+                        onClick = { onAction(Action.OnLoginButtonClick) }
                     )
 
                     LoadingButton(
                         modifier = Modifier.weight(1f),
                         title = stringResource(id = R.string.login_screen_register_button_title),
                         isLoading = uiState.isRegisterButtonLoading,
-                        onClick = onRegisterButtonClick
+                        onClick = { onAction(Action.OnRegisterButtonClick) }
                     )
                 }
             }
@@ -174,9 +175,7 @@ private fun LoginScreenPreview() {
     ChatterTheme {
         LoginScreenContent(
             uiState = State(),
-            onNameChange = {},
-            onLoginButtonClick = {},
-            onRegisterButtonClick = {},
+            onAction = {},
         )
     }
 }

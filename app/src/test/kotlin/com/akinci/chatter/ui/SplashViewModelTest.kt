@@ -13,7 +13,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import kotlin.time.Duration
 
 @ExtendWith(MainDispatcherRule::class)
 class SplashViewModelTest {
@@ -35,13 +34,11 @@ class SplashViewModelTest {
     fun `should return dashboard as initial screen when user logged in before`() = runTest {
         coEvery { dataStorageMock.getLoggedInUsersName() } returns "Attila Akinci"
 
-        testedClass.stateFlow.test(timeout = Duration.INFINITE) {
-            // ignore initial state
-            awaitItem()
-
-            with(awaitItem()) {
-                route shouldBe SplashViewContract.Route.Dashboard
-            }
+        testedClass.effect.test {
+            val effect = awaitItem()
+            assert(effect is SplashViewContract.Effect.NavigateToRoute)
+            (effect as SplashViewContract.Effect.NavigateToRoute).route shouldBe
+                    SplashViewContract.Route.Dashboard
 
             ensureAllEventsConsumed()
         }
@@ -51,13 +48,11 @@ class SplashViewModelTest {
     fun `should return login as initial screen when user not logged in before`() = runTest {
         coEvery { dataStorageMock.getLoggedInUsersName() } returns null
 
-        testedClass.stateFlow.test(timeout = Duration.INFINITE) {
-            // ignore initial state
-            awaitItem()
-
-            with(awaitItem()) {
-                route shouldBe SplashViewContract.Route.Login
-            }
+        testedClass.effect.test {
+            val effect = awaitItem()
+            assert(effect is SplashViewContract.Effect.NavigateToRoute)
+            (effect as SplashViewContract.Effect.NavigateToRoute).route shouldBe
+                    SplashViewContract.Route.Login
 
             ensureAllEventsConsumed()
         }
@@ -67,13 +62,11 @@ class SplashViewModelTest {
     fun `should return login as initial screen when user name is blank`() = runTest {
         coEvery { dataStorageMock.getLoggedInUsersName() } returns ""
 
-        testedClass.stateFlow.test(timeout = Duration.INFINITE) {
-            // ignore initial state
-            awaitItem()
-
-            with(awaitItem()) {
-                route shouldBe SplashViewContract.Route.Login
-            }
+        testedClass.effect.test {
+            val effect = awaitItem()
+            assert(effect is SplashViewContract.Effect.NavigateToRoute)
+            (effect as SplashViewContract.Effect.NavigateToRoute).route shouldBe
+                    SplashViewContract.Route.Login
 
             ensureAllEventsConsumed()
         }

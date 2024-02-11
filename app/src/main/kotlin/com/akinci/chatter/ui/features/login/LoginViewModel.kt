@@ -1,19 +1,20 @@
 package com.akinci.chatter.ui.features.login
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.akinci.chatter.R
-import com.akinci.chatter.core.compose.reduce
 import com.akinci.chatter.core.coroutine.ContextProvider
+import com.akinci.chatter.core.mvi.MVI
+import com.akinci.chatter.core.mvi.mvi
 import com.akinci.chatter.data.datastore.DataStorage
 import com.akinci.chatter.data.exception.UserFetchError
 import com.akinci.chatter.data.repository.UserRepository
-import com.akinci.chatter.ui.ds.components.snackbar.SnackBarState
+import com.akinci.chatter.ui.features.login.LoginViewContract.Action
+import com.akinci.chatter.ui.features.login.LoginViewContract.Effect
 import com.akinci.chatter.ui.features.login.LoginViewContract.State
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.SocketTimeoutException
@@ -25,15 +26,21 @@ class LoginViewModel @Inject constructor(
     private val contextProvider: ContextProvider,
     private val dataStorage: DataStorage,
     private val userRepository: UserRepository,
-) : ViewModel() {
-    private val _stateFlow: MutableStateFlow<State> = MutableStateFlow(State())
-    val stateFlow = _stateFlow.asStateFlow()
+) : ViewModel(), MVI<State, Action, Effect> by mvi(State()) {
+
+    override fun onAction(action: Action) {
+        when (action) {
+            is Action.OnTextChange -> updateName(action.text)
+            Action.OnLoginButtonClick -> tryToLogin()
+            Action.OnRegisterButtonClick -> tryToRegister()
+        }
+    }
 
     fun updateName(name: String) {
-        _stateFlow.reduce {
+        updateState {
             copy(
                 name = name,
-                validationError = false,
+                validationError = false
             )
         }
     }
@@ -43,10 +50,10 @@ class LoginViewModel @Inject constructor(
 
         viewModelScope.launch {
             // delay for proper loading animation on UI.
-            _stateFlow.reduce {
+            updateState {
                 copy(
                     validationError = false,
-                    isLoginButtonLoading = true,
+                    isLoginButtonLoading = true
                 )
             }
             delay(500L)
@@ -56,25 +63,11 @@ class LoginViewModel @Inject constructor(
                 // to simulate successful login save user's name to local storage (auto log in)
                 login()
 
-                // navigate user to dashboard screen.
-                _stateFlow.reduce {
-                    copy(
-                        navigateToDashboard = true,
-                        isLoginButtonLoading = false,
-                        isRegisterButtonLoading = false,
-                    )
-                }
+                // send navigate to dashboard effect
+                sendEffect(Effect.NavigateToDashboard)
             } else {
                 // provided user's name couldn't found on local storage.
-                _stateFlow.reduce {
-                    copy(
-                        snackBarState = SnackBarState(
-                            messageId = R.string.login_screen_error_user_could_not_found_in_local
-                        ),
-                        isLoginButtonLoading = false,
-                        isRegisterButtonLoading = false,
-                    )
-                }
+                sendToastMessage(messageId = R.string.login_screen_error_user_could_not_found_in_local)
             }
         }
     }
@@ -84,7 +77,7 @@ class LoginViewModel @Inject constructor(
 
         viewModelScope.launch {
             // delay for proper loading animation on UI.
-            _stateFlow.reduce {
+            updateState {
                 copy(
                     validationError = false,
                     isRegisterButtonLoading = true
@@ -97,7 +90,7 @@ class LoginViewModel @Inject constructor(
                 // user couldn't found in local database so we can create new one and replace user's name
                 val user = withContext(contextProvider.io) {
                     userRepository.generateRandomUser().map {
-                        it.copy(name = stateFlow.value.name)
+                        it.copy(name = state.value.name)
                     }
                 }.onFailure {
                     // our random user creation rest call is failed.
@@ -110,13 +103,8 @@ class LoginViewModel @Inject constructor(
                         else -> R.string.login_screen_error_general
                     }
 
-                    _stateFlow.reduce {
-                        copy(
-                            snackBarState = SnackBarState(messageId = errorMessageId),
-                            isLoginButtonLoading = false,
-                            isRegisterButtonLoading = false,
-                        )
-                    }
+                    sendToastMessage(messageId = errorMessageId)
+
                     return@launch
                 }.getOrNull()
 
@@ -128,68 +116,53 @@ class LoginViewModel @Inject constructor(
                         // to simulate successful login save user's name to local storage (auto log in)
                         login()
 
-                        // navigate user to dashboard screen.
-                        _stateFlow.reduce {
-                            copy(
-                                navigateToDashboard = true,
-                                isLoginButtonLoading = false,
-                                isRegisterButtonLoading = false,
-                            )
-                        }
+                        // send navigate to dashboard effect
+                        sendEffect(Effect.NavigateToDashboard)
                     }.onFailure {
                         // we couldn't save created user to our local storage.
-                        _stateFlow.reduce {
-                            copy(
-                                snackBarState = SnackBarState(
-                                    messageId = R.string.login_screen_error_user_saved
-                                ),
-                                isLoginButtonLoading = false,
-                                isRegisterButtonLoading = false,
-                            )
-                        }
+                        sendToastMessage(messageId = R.string.login_screen_error_user_saved)
                     }
                 } else {
                     // we received empty rest response.
-                    _stateFlow.reduce {
-                        copy(
-                            snackBarState = SnackBarState(
-                                messageId = R.string.login_screen_error_user_blank_response
-                            ),
-                            isLoginButtonLoading = false,
-                            isRegisterButtonLoading = false,
-                        )
-                    }
+                    sendToastMessage(messageId = R.string.login_screen_error_user_blank_response)
                 }
             } else {
                 // we found this user in our local storage. We can not create again.
-                _stateFlow.reduce {
-                    copy(
-                        snackBarState = SnackBarState(
-                            messageId = R.string.login_screen_error_user_already_exists
-                        ),
-                        isLoginButtonLoading = false,
-                        isRegisterButtonLoading = false,
-                    )
-                }
+                sendToastMessage(messageId = R.string.login_screen_error_user_already_exists)
             }
         }
     }
 
+    private suspend fun sendToastMessage(@StringRes messageId: Int) {
+        // restore loading button states
+        updateState {
+            copy(
+                isLoginButtonLoading = false,
+                isRegisterButtonLoading = false,
+            )
+        }
+
+        // show toast error message
+        sendEffect(
+            Effect.ShowToastMessage(messageId = messageId)
+        )
+    }
+
     private suspend fun login() {
         withContext(contextProvider.io) {
-            dataStorage.setLoggedInUsersName(stateFlow.value.name)
+            dataStorage.setLoggedInUsersName(state.value.name)
         }
     }
 
     private suspend fun verifyUser(): Boolean {
         return withContext(contextProvider.io) {
-            userRepository.get(stateFlow.value.name).getOrNull() != null
+            userRepository.get(state.value.name).getOrNull() != null
         }
     }
 
-    private fun validateInputs() = stateFlow.value.name.isNotEmpty().also { isValid ->
+    private fun validateInputs() = state.value.name.isNotEmpty().also { isValid ->
         if (!isValid) {
-            _stateFlow.reduce {
+            updateState {
                 copy(
                     validationError = true,
                     isLoginButtonLoading = false,

@@ -12,14 +12,19 @@ import kotlinx.parcelize.Parcelize
 object MessagingViewContract {
 
     @Parcelize
-    data class ScreenArgs(
-        val session: ChatSession,
-    ) : Parcelable
+    data class ScreenArgs(val session: ChatSession) : Parcelable
 
     data class State(
-        val session: ChatSession,
+        val session: ChatSession? = null,
         val loggedInUser: User? = null,
         val messages: PersistentList<MessageItem> = persistentListOf(),
         val text: String = "",
     ) : UIState
+
+    sealed interface Action {
+        data object OnSendButtonClick : Action
+        data class OnTextChange(val text: String) : Action
+    }
+
+    sealed interface Effect
 }

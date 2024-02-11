@@ -34,7 +34,7 @@ class ChatSessionRepositoryTest {
 
     @Test
     fun `should return chat session stream`() = runTest {
-        coEvery { chatSessionDaoMock.getStream(primaryUserId = 100L) } returns getChatSessionStream()
+        coEvery { chatSessionDaoMock.getStream(sessionMemberId = 100L) } returns getChatSessionStream()
 
         val stream = testedClass.getChatSessionStream(memberId = 100L)
 
@@ -94,13 +94,21 @@ class ChatSessionRepositoryTest {
                     primaryUserId = 100L,
                     secondaryUserId = 101L
                 ),
-                UserEntity(
+                primaryUserEntity = UserEntity(
                     id = 101L,
                     name = "Jack",
                     userName = "LuckyJack",
                     imageUrl = "http://www.google.com",
                     phone = "+32768231283",
                     nationality = "GER"
+                ),
+                secondaryUserEntity = UserEntity(
+                    id = 101L,
+                    name = "Jessica Alba",
+                    userName = "Alora",
+                    imageUrl = "http://www.youtube.com",
+                    phone = "+4453229123",
+                    nationality = "NL"
                 )
             )
         )
