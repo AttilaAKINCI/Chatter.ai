@@ -1,3 +1,35 @@
 <resources>
-    <string name="app_name">Chatter</string>
+    <string name="app_name">Chatter AI</string>
+
+    <string name="login_screen_name_title">Name</string>
+    <string name="login_screen_name_hint">Name field is used for both login and register. It can not be blank.</string>
+    <string name="login_screen_login_button_title">Login</string>
+    <string name="login_screen_register_button_title">Register</string>
+    <string name="login_screen_error_user_could_not_found_in_local">User could not found, you can try to create new user.</string>
+    <string name="login_screen_error_user_already_exists">This user already is in use. You can try to log in.</string>
+    <string name="login_screen_error_user_generation">User could not be created.</string>
+    <string name="login_screen_error_user_saved">User could not be saved.</string>
+    <string name="login_screen_error_user_blank_response">Blank user creation service response</string>
+    <string name="login_screen_error_general">Unknown service error is occurred</string>
+
+    <string name="dashboard_screen_top_bar_title">Welcome back</string>
+    <string name="dashboard_screen_top_bar_title_tail">!!</string>
+    <string name="dashboard_screen_new_chat_button_title">Start New Chat</string>
+    <string name="dashboard_screen_log_out_confirm_title">Confirmation required</string>
+    <string name="dashboard_screen_log_out_confirm_description">Do you really want to logout ?
+
+        If you want to stay and continue to chat with people more, you can press "Close" to dismiss dialog.
+    </string>
+    <string name="dashboard_screen_log_out_confirm_button_title">Logout</string>
+    <string name="dashboard_screen_log_out_dismiss_button_title">Close</string>
+    <string name="dashboard_screen_no_data">We could not find any active chats here 🥲. You can start one!</string>
+    <string name="dashboard_screen_error">Unknown error is occurred. Please try again later.</string>
+    <string name="dashboard_screen_start_new_chat_error">New chat mate couldn\'t found this time. Please try again later.</string>
+    <string name="dashboard_screen_start_new_chat_mate_save_error">New chat mate couldn\'t be saved.</string>
+    <string name="dashboard_screen_chat_session_create_error">New chat session could not be created.</string>
+    <string name="dashboard_screen_chat_session_successfully_created">Congratulations !! You have a new chat mate !!</string>
+
+    <string name="messaging_screen_text_placeholder">Message</string>
+
+    <string name="general_connection_problem">Please check your internet connection and try again later.</string>
 </resources>
