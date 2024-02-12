@@ -79,7 +79,7 @@ General capabilities of Chatter AI:
 * Match with random chat mate
 * Show chat history
 * Send message to chat mate
-* Response back with Gemini AI response
+* Receive Gemini AI response as reply
 * Receive chat mate's response
 
 
