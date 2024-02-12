@@ -50,21 +50,21 @@ In order to run project in your local be aware below points ->
 
 ## ScreenShots
 
-<img src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/1.png" width="110">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/2.png" width="110">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/3.png" width="110">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/4.png" width="110">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/5.png" width="110">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/6.png" width="110">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/7.png" width="110">    
+<img src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/light-1.png" width="110">   <img
+src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/light-2.png" width="110">   <img
+src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/light-3.png" width="110">   <img
+src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/light-4.png" width="110">   <img
+src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/light-5.png" width="110">   <img
+src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/light-6.png" width="110">   <img
+src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/light-7.png" width="110">    
 
-<img src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/1.png" width="110">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/2.png" width="110">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/3.png" width="110">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/4.png" width="110">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/5.png" width="110">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/6.png" width="110">   <img
-src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/7.png" width="110">   
+<img src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/dark-1.png" width="110">   <img
+src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/dark-2.png" width="110">   <img
+src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/dark-3.png" width="110">   <img
+src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/dark-4.png" width="110">   <img
+src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/dark-5.png" width="110">   <img
+src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/dark-6.png" width="110">   <img
+src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/dark-7.png" width="110">   
 
 
 ## Business Logics & UI Flow
