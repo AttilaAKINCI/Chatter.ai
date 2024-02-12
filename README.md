@@ -45,11 +45,10 @@ In order to run project in your local be aware below points ->
 * Instrumentation Testing
 * JUnit5
 
-#### WireFrame
+## WireFrame
 <img src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/wireframe.png" width="600">
 
-#### ScreenShots
-Light Mode:
+## ScreenShots
 
 <img src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/1.png" width="110">   <img
 src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/2.png" width="110">   <img
@@ -58,8 +57,6 @@ src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/4.png" width="11
 src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/5.png" width="110">   <img
 src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/6.png" width="110">   <img
 src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/7.png" width="110">    
-
-Dark Mode:
 
 <img src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/1.png" width="110">   <img
 src="https://github.com/AttilaAKINCI/Chatter/blob/legacy/images/2.png" width="110">   <img
