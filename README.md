@@ -4,7 +4,7 @@ Chatter AI is a [Gemini AI](https://gemini.google.com/app) powered chatting app 
 [APK Link (https://drive.google.com/file/d/1F-NiE28cLRZd3_tpXKRD3mdVVeL9iPMa/view?usp=sharing)](https://drive.google.com/file/d/1F-NiE28cLRZd3_tpXKRD3mdVVeL9iPMa/view?usp=sharing)
 
 > [!NOTE]
-> Chatter AI is a standalone application which handles/wraps all of necessary simulation/backend logics inside to provide a simulation of real time chatting experince.
+> Chatter AI is a standalone application which handles/wraps all of necessary simulation/backend logics inside to simulate real time chatting experince.
 
 
 ## How to run in your local
