@@ -32,7 +32,7 @@ In order to run project in your local be aware below points ->
 * Dark/Light UI Mode
 * [Compose Destinations](https://github.com/raamcosta/compose-destinations) / [Documentation](https://composedestinations.rafaelcosta.xyz/)
 * [Ktor Client](https://ktor.io/docs/client-supported-platforms.html)
-* [Gradle Version Catalog](https://developer.android.com/build/migrate-to-catalogs)
+* [Gradle Version Catalogs (toml)](https://developer.android.com/build/migrate-to-catalogs)
 * [ROOM DB](https://developer.android.com/training/data-storage/room)
 * [DataStrore](https://developer.android.com/topic/libraries/architecture/datastore)
 * [Lottie Animations](https://github.com/airbnb/lottie-android)
