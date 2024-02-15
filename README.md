@@ -67,7 +67,7 @@ src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/dark-6.png" wi
 src="https://github.com/AttilaAKINCI/ChatterAI/blob/master/images/dark-7.png" width="110">   
 
 
-## Business Logics & UI Flow
+## Business Logics 
 Chatter AI consist of 4 different screeens namely *Splash*, *Login*, *Dashboard*, *Messaging*. 
 
 General capabilities of Chatter AI:
@@ -81,6 +81,24 @@ General capabilities of Chatter AI:
 * Send message to chat mate
 * Receive Gemini AI response as reply
 * Receive chat mate's response
+
+##### UI Flow Basics
+- UI Flow starts with Lottie animation and app navigates to Login Screen or Dashboard Screen by checking logged in status of any user.
+- On Login Screen below validations are applied for given input text
+   - Input text can not be blank
+   - If it's login button action, user should be registered before with given name input
+   - If it's register button action, user should not be registered before with given name input.
+- Login Button navigates user to Dashboard screen 
+- Register button fetches random user information via ```randomuser.me``` public api and overrides name with given text. Then saves it into local database and logs user in.
+- Logged in user will be remembered for second app launch.
+- Dashboard Screen lists user's chat sessions.
+   - ```Logout``` button logs user out and clears logged in status.
+   - ```Start new chat``` button generates new user via ```randomuser.me``` api and creates a chat session with new fetched user.
+- Tap actions for any row navigates user to Messaging Screen.
+- Messaging history will be restored for each chat session.
+- User can send message by using bottom text field and send button.
+- Integrated chat simulation engine will pick for each send message and will reply it with Gemini AI response, if valid api key provided. As a fallback mechanism (in case of any issue with Gemini) simulation engine will reply with ```Answer for '<User's message>' -> {random integer value}``` format
+
 
 ## App Video
     
