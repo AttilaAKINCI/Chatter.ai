@@ -82,15 +82,15 @@ General capabilities of Chatter AI:
 * Receive Gemini AI response as reply
 * Receive chat mate's response
 
-
 ## App Video
+    
+    Launch & Login   Direct Dashboard & Logut  Login Validations   Find Chat Mate    Messaging           
 
-          Normal Run              New User Login            Registered User          Remember User Until Logout
-
-<img src="https://user-images.githubusercontent.com/21987335/113508875-1c0b5780-955b-11eb-83e0-6892340584b2.gif" width="200"/>  <img 
-src="https://user-images.githubusercontent.com/21987335/113509029-0d717000-955c-11eb-92f0-6f870b9f6bc2.gif" width="200"/> <img 
-src="https://user-images.githubusercontent.com/21987335/113509039-1b26f580-955c-11eb-9f41-982ade6b6c5c.gif" width="200"/> <img 
-src="https://user-images.githubusercontent.com/21987335/113509052-267a2100-955c-11eb-9a9a-319b5cb684a9.gif" width="200"/>
+<img src="https://github.com/AttilaAKINCI/ChatterAI/assets/21987335/e0db8483-b3aa-47a9-a9a0-3a702a7168bd" width="160"/> <img 
+src="https://github.com/AttilaAKINCI/ChatterAI/assets/21987335/75f5a4ad-6f75-4ae2-a8a9-1dd165912966" width="160"/>  <img 
+src="https://github.com/AttilaAKINCI/ChatterAI/assets/21987335/7eaa1aef-74d9-45db-8f5e-8ff8fce705d7" width="160"/>  <img 
+src="https://github.com/AttilaAKINCI/ChatterAI/assets/21987335/373c8249-4332-4338-807f-8f5966f65494" width="160"/> <img
+src="https://github.com/AttilaAKINCI/ChatterAI/assets/21987335/8022680c-3f46-4daf-8a0f-dea2906c208a" width="160"/> 
 
 
 # License
