@@ -34,6 +34,7 @@ In order to run project in your local be aware below points ->
 * [Ktor Client](https://ktor.io/docs/client-supported-platforms.html)
 * [Gradle Version Catalogs (toml)](https://developer.android.com/build/migrate-to-catalogs)
 * [ROOM DB](https://developer.android.com/training/data-storage/room)
+  - Relational DB usage
 * [DataStrore](https://developer.android.com/topic/libraries/architecture/datastore)
 * [Lottie Animations](https://github.com/airbnb/lottie-android)
 * [Coil](https://github.com/coil-kt/coil)
