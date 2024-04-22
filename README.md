@@ -1,6 +1,9 @@
 # Chatter AI
 Chatter AI is a [Gemini AI](https://gemini.google.com/app) powered chatting app which can simulate mutual chatting behaviour. 
 
+If you find my repository helpful, you can [buy me a coffee](https://buymeacoffee.com/attilaakinci
+) to see more PoC samples 🍻☕️ 
+
 [APK Link (https://drive.google.com/file/d/1F-NiE28cLRZd3_tpXKRD3mdVVeL9iPMa/view?usp=sharing)](https://drive.google.com/file/d/1F-NiE28cLRZd3_tpXKRD3mdVVeL9iPMa/view?usp=sharing)
 
 > [!NOTE]
